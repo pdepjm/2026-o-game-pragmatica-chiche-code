@@ -7,15 +7,28 @@ program LluviaDeObjetos {
 	game.height(12)
 	game.width(10)
 	game.cellSize(60)
+	game.ground("celda.png")
 	game.addVisual(personaje)
+	game.addVisual(comida)
+	game.addVisual(bomba)
+	
+	
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })
 	keyboard.a().onPressDo({ personaje.moverIzquierda() })
 
 	keyboard.right().onPressDo({ personaje.moverDerecha() })
 	keyboard.d().onPressDo({ personaje.moverDerecha() })
-	
+
 	keyboard.space().onPressDo({ personaje.saltar() })
 	keyboard.w().onPressDo({ personaje.saltar() })
+
+	game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
+
+	game.onTick(600, "caida", {
+		comida.caer()
+		bomba.caer()
+		
+	})
 
 	game.start()
 }

@@ -3,7 +3,7 @@ object personaje {
   var saltando = false
 
   method position() = posicion
-  method image()= "goat.png"
+  method image()= "personaje.png"
 
  
   method moverIzquierda() {
@@ -26,6 +26,62 @@ object personaje {
         posicion = posicion.down(1)
         saltando = false
       })
+    }
+  }
+}
+
+object comida {
+  var posicion = game.at(2,11)
+  var activa = true
+
+  method position() = posicion
+  method image()= "apple.png"
+
+  method caer(){
+    if(activa){
+      if(posicion.y() > 0){
+        posicion = posicion.down(1)
+      }else {
+        self.desaparecer()
+      }
+    }
+  }
+ method serAgarrado(){
+  self.desaparecer()
+ }
+method desaparecer(){
+  if(activa){
+    activa = false
+    game.removeVisual(self)
+  }
+}
+}
+
+object bomba {
+  var posicion = game.at(7, 11)
+  var activa = true
+
+  method position() = posicion
+  method image() = "bomba.png"
+
+  method caer() {
+    if (activa) {
+      if (posicion.y() > 0) {
+        posicion = posicion.down(1)
+      } else {
+        self.desaparecer()
+      }
+    }
+  }
+
+  method serAgarrado() {
+    self.desaparecer()
+  }
+
+  method desaparecer() {
+    if (activa) {
+      activa = false
+      game.removeVisual(self)
     }
   }
 }
