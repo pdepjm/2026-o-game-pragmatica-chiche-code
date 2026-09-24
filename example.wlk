@@ -1,25 +1,27 @@
 object personaje {
   var posicion = game.at(4,0)
   var saltando = false
+  var puedeMoverse = true
+  var property multiplicador = 1
 
   method position() = posicion
   method image()= "personaje.png"
 
  
   method moverIzquierda() {
-    if (posicion.x() > 0) {
+    if (posicion.x() > 0 and puedeMoverse) {
       posicion = posicion.left(1)
     }
   }
 
   method moverDerecha() {
-    if (posicion.x() < game.width()-1) {
+    if (posicion.x() < game.width()-1 and puedeMoverse) {
       posicion = posicion.right(1)
     }
   }
 
   method saltar() {
-    if (not saltando) {
+    if (not saltando and puedeMoverse) {
       saltando = true
       posicion = posicion.up(1)
       game.schedule(400, {
@@ -28,6 +30,15 @@ object personaje {
       })
     }
   }
+  method congelar() {
+    puedeMoverse = false
+    game.schedule(3000, { puedeMoverse = true })
+  }
+  method inspirar() {
+    multiplicador = 2
+    game.schedule(5000, { multiplicador = 1 })
+  }
+
 }
 
 object comida {
@@ -48,6 +59,7 @@ object comida {
   }
  method serAgarrado(){
   self.desaparecer()
+  marcador.ganarPuntos(10 * personaje.multiplicador())
  }
 method desaparecer(){
   if(activa){
@@ -76,6 +88,7 @@ object bomba {
 
   method serAgarrado() {
     self.desaparecer()
+    marcador.ganarPuntos(-50)
   }
 
   method desaparecer() {
@@ -84,4 +97,56 @@ object bomba {
       game.removeVisual(self)
     }
   }
+}
+
+object insipiracion {
+  var posicion = game.at(3, 11)
+  var activa = true
+
+  method position() = posicion
+
+  method serAgarrado() {
+    if (activa) {
+      activa = false
+      personaje.inspirar() 
+      game.removeVisual(self)
+    }
+  }
+  
+}
+
+object debuffHielo {
+  var posicion = game.at(6, 11)
+  var activa = true
+
+  method position() = posicion
+  method image() = "hielo.png"
+
+  method serAgarrado() {
+    if (activa) {
+      activa = false
+      personaje.congelar()
+      game.removeVisual(self)
+    }
+  }
+
+}
+
+object fondoPuntuacion {
+  const property position = game.at(1, 9) 
+  method image() = "puntuacion.png"
+}
+
+object marcador {
+  var puntos = 0
+  const property position = game.at(3, 9)
+  method text() = puntos.toString()
+  method ganarPuntos(cantidad) {
+    puntos += cantidad
+  }
+  method reiniciar() {
+    puntos = 0
+  }
+
+  
 }
