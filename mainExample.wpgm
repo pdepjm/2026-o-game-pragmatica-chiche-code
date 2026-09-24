@@ -11,6 +11,7 @@ program LluviaDeObjetos {
 	game.addVisual(personaje)
 	game.addVisual(comida)
 	game.addVisual(bomba)
+	game.addVisual(healthBar)
 	
 	
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })

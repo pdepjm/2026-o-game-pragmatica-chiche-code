@@ -1,4 +1,8 @@
 object personaje {
+  
+  const vidaMaxima = 10
+  var vidaActual = 10
+
   var posicion = game.at(4,0)
   var saltando = false
 
@@ -28,6 +32,26 @@ object personaje {
       })
     }
   }
+
+  method vida() = vidaActual
+  
+  method recibirDanio(danio) {
+    vidaActual = vidaActual - danio
+    if (vidaActual < 0) {
+      vidaActual = 0
+    }
+
+    healthBar.actualizar()
+  }
+
+  method curar(cantidad) {
+    vidaActual = vidaActual + cantidad
+    if (vidaActual > vidaMaxima) {
+      vidaActual = vidaMaxima
+    }
+
+    healthBar.actualizar()
+  }
 }
 
 object comida {
@@ -46,15 +70,16 @@ object comida {
       }
     }
   }
- method serAgarrado(){
-  self.desaparecer()
- }
-method desaparecer(){
-  if(activa){
-    activa = false
-    game.removeVisual(self)
+  method serAgarrado(){
+    self.desaparecer()
+    personaje.curar(1)
   }
-}
+  method desaparecer(){
+    if(activa){
+      activa = false
+      game.removeVisual(self)
+    }
+  }
 }
 
 object bomba {
@@ -76,6 +101,7 @@ object bomba {
 
   method serAgarrado() {
     self.desaparecer()
+    personaje.recibirDanio(2)
   }
 
   method desaparecer() {
@@ -83,5 +109,18 @@ object bomba {
       activa = false
       game.removeVisual(self)
     }
+  }
+}
+
+object healthBar {
+
+  var imagen = "vida/vida10.png"
+
+  method position() = game.at(0, 11)
+
+  method image() = imagen
+
+  method actualizar() {
+    imagen = "vida/vida" + personaje.vida() + ".png"
   }
 }
