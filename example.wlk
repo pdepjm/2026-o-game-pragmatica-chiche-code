@@ -86,23 +86,32 @@ object bomba {
   }
 }
 
-object segmentoLanza1 {
+class SegmentoLanza {
   var posicion  = game.at(0, 0)
   var lado = "izquierda"
+  var altura = "piso"
   var imagen = "lanzaMango.png"
 
-  method setearSegunLado(){
-    if(lado == "izquierda"){
+  method setearSegunSpawn(){
+    if (lado == "izquierda" && altura == "piso") {
       posicion = game.at(0, 0)
-    } else {
-      posicion = game.at(9,0)
+    }
+    if (lado == "derecha" && altura == "piso") {
+      posicion = game.at(9, 0)
+    }
+    if (lado == "izquierda" && altura == "aire") {
+      posicion = game.at(0, 1)
+    }
+    if (lado == "derecha" && altura == "aire") {
+      posicion = game.at(9, 1)
     }
   }
 
-  method lado(_lado) {
+  method spawn(_lado, _altura) {
     lado = _lado
+    altura = _altura
 
-    self.setearSegunLado()
+    self.setearSegunSpawn()
   }
 
   method position() = posicion
@@ -117,86 +126,30 @@ object segmentoLanza1 {
   }
 }
 
-object segmentoLanza2 {
+class Lanza {
   var posicion  = game.at(0, 0)
   var lado = "izquierda"
-  var imagen = "lanzaMango.png"
-
-  method setearSegunLado(){
-    if(lado == "izquierda"){
-      posicion = game.at(0, 0)
-    } else {
-      posicion = game.at(9,0)
-    }
-  }
-
-  method lado(_lado) {
-    lado = _lado
-
-    self.setearSegunLado()
-  }
-
-  method position() = posicion
-  method image() = imagen
-
-  method moverDerecha() {
-    posicion = posicion.right(1)
-  }
-
-  method moverIzquierda() {
-    posicion = posicion.left(1)
-  }
-}
-
-object segmentoLanza3 {
-  var posicion  = game.at(0, 0)
-  var lado = "izquierda"
-  var imagen = "lanzaMango.png"
-
-  method setearSegunLado(){
-    if(lado == "izquierda"){
-      posicion = game.at(0, 0)
-    } else {
-      posicion = game.at(9,0)
-    }
-  }
-
-  method lado(_lado) {
-    lado = _lado
-
-    self.setearSegunLado()
-  }
-
-  method position() = posicion
-  method image() = imagen
-
-  method moverDerecha() {
-    posicion = posicion.right(1)
-  }
-
-  method moverIzquierda() {
-    posicion = posicion.left(1)
-  }
-}
-
-object lanza {
-  var posicion  = game.at(0, 0)
-  var lado = "izquierda"
+  var altura = "piso"
   var imagen = "lanzaIzq.png"
 
-  method lado(_lado) {
-    lado = _lado
+  const segmentoLanza1 = new SegmentoLanza()
+  const segmentoLanza2 = new SegmentoLanza()
+  const segmentoLanza3 = new SegmentoLanza()
 
-    self.setearLanzaSegunLado()
+  method spawn(_lado, _altura) {
+    lado = _lado
+    altura = _altura
+
+    self.setearLanzaSegunSpawn()
   }
 
   method moverLanza() {
     if (lado == "izquierda") {
       game.schedule(400, {
         posicion = posicion.right(1)
-        segmentoLanza1.lado("izquierda")
-        segmentoLanza2.lado("izquierda")
-        segmentoLanza3.lado("izquierda")
+        segmentoLanza1.spawn(lado, altura)
+        segmentoLanza2.spawn(lado, altura)
+        segmentoLanza3.spawn(lado, altura)
         game.addVisual(segmentoLanza1)
         })
       game.schedule(800, {
@@ -229,9 +182,9 @@ object lanza {
     } else {
       game.schedule(400, {
         posicion = posicion.left(1)
-        segmentoLanza1.lado("derecha")
-        segmentoLanza2.lado("derecha")
-        segmentoLanza3.lado("derecha")
+        segmentoLanza1.spawn(lado, altura)
+        segmentoLanza2.spawn(lado, altura)
+        segmentoLanza3.spawn(lado, altura)
         game.addVisual(segmentoLanza1)
         })
       game.schedule(800, {
@@ -265,13 +218,22 @@ object lanza {
   }
 
 // seteamos la posicion y la imagen de la lanza segun el lado de spawn
-  method setearLanzaSegunLado(){
-    if(lado == "izquierda") {
+  method setearLanzaSegunSpawn(){
+    if (lado == "izquierda" && altura == "piso") {
       imagen = "lanzaIzq.png"
       posicion = game.at(0, 0)
-    } else {
+    }
+    if (lado == "derecha" && altura == "piso") {
       imagen = "lanzaDer.png"
       posicion = game.at(9, 0)
+    }
+    if (lado == "izquierda" && altura == "aire") {
+      imagen = "lanzaIzq.png"
+      posicion = game.at(0, 1)
+    }
+    if (lado == "derecha" && altura == "aire") {
+      imagen = "lanzaDer.png"
+      posicion = game.at(9, 1)
     }
   }
 
@@ -280,22 +242,33 @@ object lanza {
   
 }
 
-object advertencia {
+class Advertencia {
   var posicion = game.at(9, 0)
   var lado = "izquierda"
+  var altura = "piso"
   var imagen = "advertencia1.png"
 
-  method lado(_lado) {
-    lado = _lado
+  const lanza = new Lanza()
 
-    self.setearAdvertenciaSegunLado()
+  method spawn(_lado, _altura) {
+    lado = _lado
+    altura = _altura
+
+    self.setearAdvertenciaSegunSpawn()
   }
 
-  method setearAdvertenciaSegunLado(){
-    if(lado == "izquierda") {
+  method setearAdvertenciaSegunSpawn(){
+    if (lado == "izquierda" && altura == "piso") {
       posicion = game.at(0, 0)
-    } else {
+    }
+    if (lado == "derecha" && altura == "piso") {
       posicion = game.at(9, 0)
+    }
+    if (lado == "izquierda" && altura == "aire") {
+      posicion = game.at(0, 1)
+    }
+    if (lado == "derecha" && altura == "aire") {
+      posicion = game.at(9, 1)
     }
   }
 
@@ -342,7 +315,7 @@ object advertencia {
 
   method desaparecer(){
     game.removeVisual(self)
-    lanza.lado(lado)
+    lanza.spawn(lado, altura)
     game.addVisual(lanza)
     lanza.moverLanza()
   }
