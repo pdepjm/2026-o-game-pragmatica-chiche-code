@@ -252,6 +252,7 @@ class Lanza {
   method serAgarrado() {
     if (not golpeado) {
       marcador.ganarPuntos(-75)
+      personaje.recibirDanio(3)
       golpeado = true
     }
   }
