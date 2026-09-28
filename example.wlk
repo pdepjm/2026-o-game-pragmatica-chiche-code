@@ -159,6 +159,11 @@ class SegmentoLanza {
   var lado = "izquierda"
   var altura = "piso"
   var imagen = "lanzaMango.png"
+  const lanza
+
+  method serAgarrado() {
+    lanza.serAgarrado()
+  }
 
   method setearSegunSpawn(){
     if (lado == "izquierda" && altura == "piso") {
@@ -199,10 +204,18 @@ class Lanza {
   var lado = "izquierda"
   var altura = "piso"
   var imagen = "lanzaIzq.png"
+  var golpeado = false
 
-  const segmentoLanza1 = new SegmentoLanza()
-  const segmentoLanza2 = new SegmentoLanza()
-  const segmentoLanza3 = new SegmentoLanza()
+  const segmentoLanza1 = new SegmentoLanza(lanza = self)
+  const segmentoLanza2 = new SegmentoLanza(lanza = self)
+  const segmentoLanza3 = new SegmentoLanza(lanza = self)
+
+  method serAgarrado() {
+    if (not golpeado) {
+      marcador.ganarPuntos(-75)
+      golpeado = true
+    }
+  }
 
   method spawn(_lado, _altura) {
     lado = _lado
@@ -246,7 +259,10 @@ class Lanza {
         posicion = posicion.left(1)
         game.removeVisual(segmentoLanza1)
         })
-      game.schedule(2800, {game.removeVisual(self)})
+      game.schedule(2800, {
+        game.removeVisual(self)
+        generadorLanzas.liberar(lado, altura)
+        })
     } else {
       game.schedule(400, {
         posicion = posicion.left(1)
@@ -281,7 +297,10 @@ class Lanza {
         posicion = posicion.right(1)
         game.removeVisual(segmentoLanza1)
         })
-      game.schedule(2800, {game.removeVisual(self)})
+      game.schedule(2800, {
+        game.removeVisual(self)
+        generadorLanzas.liberar(lado, altura)
+        })
     }
   }
 
@@ -310,6 +329,35 @@ class Lanza {
   
 }
 
+object generadorLanzas {
+  const spawns = [
+    ["izquierda", "piso"], ["derecha", "piso"],
+    ["izquierda", "aire"], ["derecha", "aire"]
+  ]
+  
+  // spawns que tienen una advertencia o una lanza activa
+  const ocupados = []
+
+  method lanzarRandom() {
+    const libres = spawns.filter({ spawn => not ocupados.contains(spawn) })
+    if (not libres.isEmpty()) {
+      const spawn = libres.anyOne()
+      ocupados.add(spawn)
+
+      const advertencia = new Advertencia()
+      advertencia.spawn(spawn.first(), spawn.last())
+      game.addVisual(advertencia)
+      advertencia.animacion()
+    }
+  }
+
+  // la lanza avisa cuando termina para que su spawn se pueda volver a usar
+  method liberar(lado, altura) {
+    ocupados.removeAllSuchThat({ spawn => spawn.first() == lado and spawn.last() == altura })
+  }
+}
+
+
 class Advertencia {
   var posicion = game.at(9, 0)
   var lado = "izquierda"
@@ -317,6 +365,10 @@ class Advertencia {
   var imagen = "advertencia1.png"
 
   const lanza = new Lanza()
+
+  method serAgarrado(){
+    // vacio no hace nada
+  }
 
   method spawn(_lado, _altura) {
     lado = _lado
@@ -387,15 +439,6 @@ class Advertencia {
     game.addVisual(lanza)
     lanza.moverLanza()
   }
-}
-
-// objeto de ejemplo
-object ejemplo {
-  var posicion  = game.at(4, 4)
-  var imagen = "cuadradito.png"
-
-  method position() = posicion
-  method image() = imagen
 }
 
 class Inspiracion {

@@ -13,7 +13,6 @@ program LluviaDeObjetos {
 	game.addVisual(fondoPuntuacion)
 	game.addVisual(marcador)      
 	game.addVisual(personaje)
-	game.addVisual(ejemplo)
 
 	const generadorComida = new GeneradorObjetos(crear = {new Comida()})
 	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})
@@ -31,7 +30,7 @@ program LluviaDeObjetos {
 
 	game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
 
-	game.onTick(2000, "Generar comida", {
+	game.onTick(1600, "Generar comida", {
 		generadorComida.generar()
 	})
 
@@ -56,40 +55,8 @@ program LluviaDeObjetos {
 		generadorDebuffHielo.actualizar()
 	})
 
-	game.onTick(1500, "crear lanza a la izquierda en el piso", {
-		const advertencia = new Advertencia()
-
-		advertencia.spawn("izquierda", "piso")
-		game.addVisual(advertencia)
-		advertencia.animacion()
-		game.removeTickEvent("crear lanza a la izquierda en el piso")
-	})
-
-	game.onTick(4000, "crear lanza a la derecha en el piso", {
-		const advertencia = new Advertencia()
-
-		advertencia.spawn("derecha", "piso")
-		game.addVisual(advertencia)
-		advertencia.animacion()
-		game.removeTickEvent("crear lanza a la derecha en el piso")
-	})
-	
-	game.onTick(4000, "crear lanza a la izquierda en el aire", {
-		const advertencia = new Advertencia()
-
-		advertencia.spawn("izquierda", "aire")
-		game.addVisual(advertencia)
-		advertencia.animacion()
-		game.removeTickEvent("crear lanza a la izquierda en el aire")
-	})
-
-	game.onTick(1500, "crear lanza a la derecha en el aire", {
-		const advertencia = new Advertencia()
-
-		advertencia.spawn("derecha", "aire")
-		game.addVisual(advertencia)
-		advertencia.animacion()
-		game.removeTickEvent("crear lanza a la derecha en el aire")
+	game.onTick(7000, "crear lanza", {
+		generadorLanzas.lanzarRandom()
 	})
 
 	game.start()
