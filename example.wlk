@@ -7,7 +7,10 @@ object personaje {
   var congelamientosActivos = 0
 
   method position() = posicion
-  method image()= "personaje.png"
+  method image() =
+    if (congelamientosActivos > 0) "personaje_congelado.png"
+    else if (inspiracionesActivas > 0) "personaje_dorado.png"
+    else "personaje.png"
 
  
   method moverIzquierda() {
@@ -76,7 +79,7 @@ class GeneradorObjetos {
 
   method posicionRandom() {
     var xRandom = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].anyOne()
-    var posicionRandom = game.at(xRandom, 11)
+    var posicionRandom = game.at(xRandom, marco.fila() - 1)
 
     return posicionRandom
   }
@@ -162,7 +165,7 @@ method posicion(_posicion) {
   }
 
   method position() = posicion
-  method image() = "Inspiracion.png"
+  method image() = "inspiracion.png"
     
     method caer() {
     if (activa) {
@@ -231,20 +234,34 @@ method posicion(_posicion) {
 }
 
 object fondoPuntuacion {
-  const property position = game.at(1, 9) 
+  method position() = game.at(0, marco.fila())
   method image() = "puntuacion.png"
 }
 
 object marcador {
   var puntos = 0
-  const property position = game.at(3, 9)
+  method position() = game.at(1, marco.fila())
   method text() = puntos.toString()
+  method textColor() = "FFD700"
   method ganarPuntos(cantidad) {
     puntos = (puntos + cantidad).max(0)
   }
   method reiniciar() {
     puntos = 0
   }
+}
 
-  
+class CeldaMarco {
+  const property position
+  method image() = "celda2.png"
+}
+
+object marco {
+  method fila() = 12
+
+  method dibujar() {
+    (0 .. 9).forEach({ x =>
+      game.addVisual(new CeldaMarco(position = game.at(x, self.fila())))
+    })
+  }
 }
