@@ -99,7 +99,7 @@ object bomba {
   }
 }
 
-object insipiracion {
+object inspiracion {
   var posicion = game.at(3, 11)
   var activa = true
 
@@ -142,7 +142,7 @@ object marcador {
   const property position = game.at(3, 9)
   method text() = puntos.toString()
   method ganarPuntos(cantidad) {
-    puntos += cantidad
+    puntos = (puntos + cantidad).max(0)
   }
   method reiniciar() {
     puntos = 0
