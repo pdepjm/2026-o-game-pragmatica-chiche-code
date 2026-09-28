@@ -11,8 +11,9 @@ program LluviaDeObjetos {
 	game.addVisual(fondoPuntuacion) 
   game.addVisual(marcador)      
 	game.addVisual(personaje)
-	game.addVisual(comida)
-	game.addVisual(bomba)
+
+	const generadorComida = new GeneradorObjetos(crear = {new Comida()})
+	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})
 	
 	
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })
@@ -26,10 +27,17 @@ program LluviaDeObjetos {
 
 	game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
 
+	game.onTick(2000, "Generar comida", {
+		generadorComida.generar()
+	})
+
+	game.onTick(2500, "Generar bomba", {
+		generadorBomba.generar()
+	})
+
 	game.onTick(600, "caida", {
-		comida.caer()
-		bomba.caer()
-		
+		generadorComida.actualizar()
+		generadorBomba.actualizar()
 	})
 
 	game.start()
