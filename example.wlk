@@ -51,11 +51,9 @@ object personaje {
   }
 
   method gameOver() {
-    game.removeTickEvent("caida")
-    game.removeTickEvent("Generar bomba")
-    game.removeTickEvent("Generar comida")
-
     game.addVisual(gameOver)
+
+    game.stop()
 
   }
 
