@@ -10,15 +10,17 @@ object personaje {
   var property multiplicador = 1
   var inspiracionesActivas = 0
   var congelamientosActivos = 0
+  var lastimadurasActivas = 0
 
   const vidaMaxima = 10
   var vidaActual = 10
 
   method position() = posicion
   method image() =
-    if (congelamientosActivos > 0) "personaje_congelado.png"
-    else if (inspiracionesActivas > 0) "personaje_dorado.png"
-    else "personaje.png"
+    if (lastimadurasActivas > 0 ) "personaje/personaje_lastimado.png"
+    else if (congelamientosActivos > 0) "personaje/personaje_congelado.png"
+    else if (inspiracionesActivas > 0) "personaje/personaje_dorado.png"
+    else "personaje/personaje.png"
   method vida() = vidaActual
 
  
@@ -71,6 +73,9 @@ object personaje {
     if (vidaActual < 0) {
       vidaActual = 0
     }
+
+    lastimadurasActivas += 1
+    game.schedule(1000, { lastimadurasActivas -= 1 })
 
     healthBar.actualizar()
 
@@ -197,7 +202,7 @@ class SegmentoLanza {
   var posicion  = game.at(0, 0)
   var lado = "izquierda"
   var altura = "piso"
-  var imagen = "lanzaMango.png"
+  var imagen = "lanza/lanzaMango.png"
   const lanza
 
   method serAgarrado() {
@@ -242,7 +247,7 @@ class Lanza {
   var posicion  = game.at(0, 0)
   var lado = "izquierda"
   var altura = "piso"
-  var imagen = "lanzaIzq.png"
+  var imagen = "lanza/lanzaIzq.png"
   var golpeado = false
 
   const segmentoLanza1 = new SegmentoLanza(lanza = self)
@@ -347,19 +352,19 @@ class Lanza {
 // seteamos la posicion y la imagen de la lanza segun el lado de spawn
   method setearLanzaSegunSpawn(){
     if (lado == "izquierda" && altura == "piso") {
-      imagen = "lanzaIzq.png"
+      imagen = "lanza/lanzaIzq.png"
       posicion = game.at(0, 0)
     }
     if (lado == "derecha" && altura == "piso") {
-      imagen = "lanzaDer.png"
+      imagen = "lanza/lanzaDer.png"
       posicion = game.at(9, 0)
     }
     if (lado == "izquierda" && altura == "aire") {
-      imagen = "lanzaIzq.png"
+      imagen = "lanza/lanzaIzq.png"
       posicion = game.at(0, 1)
     }
     if (lado == "derecha" && altura == "aire") {
-      imagen = "lanzaDer.png"
+      imagen = "lanza/lanzaDer.png"
       posicion = game.at(9, 1)
     }
   }
@@ -402,7 +407,7 @@ class Advertencia {
   var posicion = game.at(9, 0)
   var lado = "izquierda"
   var altura = "piso"
-  var imagen = "advertencia1.png"
+  var imagen = "advertencia/advertencia1.png"
 
   const lanza = new Lanza()
 
@@ -437,35 +442,35 @@ class Advertencia {
 
   method animacion() {
     game.schedule(400, {
-      imagen = "advertencia2.png"
+      imagen = "advertencia/advertencia2.png"
     })
 
     game.schedule(800, {
-      imagen = "advertencia3.png"
+      imagen = "advertencia/advertencia3.png"
     })
 
     game.schedule(1200, {
-      imagen = "advertencia2.png"
+      imagen = "advertencia/advertencia2.png"
     })
 
     game.schedule(1600, {
-      imagen = "advertencia1.png"
+      imagen = "advertencia/advertencia1.png"
     })
 
     game.schedule(2000, {
-      imagen = "advertencia2.png"
+      imagen = "advertencia/advertencia2.png"
     })
 
     game.schedule(2400, {
-      imagen = "advertencia3.png"
+      imagen = "advertencia/advertencia3.png"
     })
 
     game.schedule(2800, {
-      imagen = "advertencia2.png"
+      imagen = "advertencia/advertencia2.png"
     })
 
     game.schedule(3200, {
-      imagen = "advertencia1.png"
+      imagen = "advertencia/advertencia1.png"
     })
 
     game.schedule(3600, {
