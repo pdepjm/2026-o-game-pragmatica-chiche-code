@@ -13,6 +13,7 @@ program LluviaDeObjetos {
 	game.addVisual(fondoPuntuacion)
 	game.addVisual(marcador)      
 	game.addVisual(personaje)
+	game.addVisual(healthBar)
 
 	const generadorComida = new GeneradorObjetos(crear = {new Comida()})
 	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})

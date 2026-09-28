@@ -1,3 +1,8 @@
+object gameOver {
+  method position() = game.at(2, 3)
+  method image() = "gameOver.png"
+}
+
 object personaje {
   var posicion = game.at(4,0)
   var saltando = false
@@ -6,11 +11,15 @@ object personaje {
   var inspiracionesActivas = 0
   var congelamientosActivos = 0
 
+  const vidaMaxima = 10
+  var vidaActual = 10
+
   method position() = posicion
   method image() =
     if (congelamientosActivos > 0) "personaje_congelado.png"
     else if (inspiracionesActivas > 0) "personaje_dorado.png"
     else "personaje.png"
+  method vida() = vidaActual
 
  
   method moverIzquierda() {
@@ -55,6 +64,34 @@ object personaje {
         multiplicador = 1 
       }
     })
+  }
+
+  method recibirDanio(danio) {
+    vidaActual = vidaActual - danio
+    if (vidaActual < 0) {
+      vidaActual = 0
+    }
+
+    healthBar.actualizar()
+
+    if (vidaActual == 0) {
+      self.gameOver()
+    }
+  }
+
+  method gameOver() {
+    game.addVisual(gameOver)
+
+    game.stop()
+  }
+
+  method curar(cantidad) {
+    vidaActual = vidaActual + cantidad
+    if (vidaActual > vidaMaxima) {
+      vidaActual = vidaMaxima
+    }
+
+    healthBar.actualizar()
   }
 
 }
@@ -109,6 +146,7 @@ class Comida {
  method serAgarrado(){
   self.desaparecer()
   marcador.ganarPuntos(10 * personaje.multiplicador())
+  personaje.curar(1)
  }
 method desaparecer(){
   if(activa){
@@ -144,6 +182,7 @@ class Bomba {
   method serAgarrado() {
     self.desaparecer()
     marcador.ganarPuntos(-50)
+    personaje.recibirDanio(2)
   }
 
   method desaparecer() {
@@ -234,13 +273,13 @@ method posicion(_posicion) {
 }
 
 object fondoPuntuacion {
-  method position() = game.at(0, marco.fila())
+  method position() = game.at(8, marco.fila())
   method image() = "puntuacion.png"
 }
 
 object marcador {
   var puntos = 0
-  method position() = game.at(1, marco.fila())
+  method position() = game.at(9, marco.fila())
   method text() = puntos.toString()
   method textColor() = "FFD700"
   method ganarPuntos(cantidad) {
@@ -263,5 +302,18 @@ object marco {
     (0 .. 9).forEach({ x =>
       game.addVisual(new CeldaMarco(position = game.at(x, self.fila())))
     })
+  }
+}
+
+object healthBar {
+
+  var imagen = "vida/vida10.png"
+
+  method position() = game.at(0, marco.fila())
+
+  method image() = imagen
+
+  method actualizar() {
+    imagen = "vida/vida" + personaje.vida() + ".png"
   }
 }
