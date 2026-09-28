@@ -9,11 +9,13 @@ program LluviaDeObjetos {
 	game.cellSize(60)
 	game.ground("celda.png")
 	game.addVisual(fondoPuntuacion) 
-  game.addVisual(marcador)      
+  	game.addVisual(marcador)      
 	game.addVisual(personaje)
 
 	const generadorComida = new GeneradorObjetos(crear = {new Comida()})
 	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})
+	const generadorComida = new GeneradorObjetos(crear = {new Inspiracion()})
+	const generadorComida = new GeneradorObjetos(crear = {new DebuffHielo()})
 	
 	
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })

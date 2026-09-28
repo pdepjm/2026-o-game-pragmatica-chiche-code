@@ -3,6 +3,8 @@ object personaje {
   var saltando = false
   var puedeMoverse = true
   var property multiplicador = 1
+  var inspiracionesActivas = 0
+  var congelamientosActivos = 0
 
   method position() = posicion
   method image()= "personaje.png"
@@ -31,12 +33,25 @@ object personaje {
     }
   }
   method congelar() {
+    congelamientosActivos += 1
     puedeMoverse = false
-    game.schedule(3000, { puedeMoverse = true })
+    game.schedule(3000, { 
+      congelamientosActivos -= 1
+      if (congelamientosActivos == 0) {
+        puedeMoverse = true 
+      }
+    })
   }
   method inspirar() {
+    inspiracionesActivas += 1
     multiplicador = 2
-    game.schedule(5000, { multiplicador = 1 })
+    
+    game.schedule(5000, { 
+      inspiracionesActivas -= 1
+      if (inspiracionesActivas == 0) {
+        multiplicador = 1 
+      }
+    })
   }
 
 }
@@ -136,36 +151,82 @@ class Bomba {
   }
 }
 
-object inspiracion {
+class Inspiracion {
   var posicion = game.at(3, 11)
   var activa = true
 
+ method estaActiva() = activa
+
+method posicion(_posicion) {
+    posicion = _posicion
+  }
+
   method position() = posicion
+  method image() = "Inspiracion.png"
+    
+    method caer() {
+    if (activa) {
+      if (posicion.y() > 0) {
+        posicion = posicion.down(1)
+      } else {
+        self.desaparecer()
+      }
+    }
+  }
 
   method serAgarrado() {
     if (activa) {
-      activa = false
       personaje.inspirar() 
+      self.desaparecer()
+    }
+  }
+
+   method desaparecer() {
+    if (activa) {
+      activa = false
       game.removeVisual(self)
     }
   }
   
 }
 
-object debuffHielo {
+class DebuffHielo {
   var posicion = game.at(6, 11)
   var activa = true
+
+ method estaActiva() = activa
+
+method posicion(_posicion) {
+    posicion = _posicion
+  }
 
   method position() = posicion
   method image() = "hielo.png"
 
+  method caer() {
+    if (activa) {
+      if (posicion.y() > 0) {
+        posicion = posicion.down(1)
+      } else {
+        self.desaparecer()
+      }
+    }
+  }
+
   method serAgarrado() {
     if (activa) {
+      personaje.congelar() 
+      self.desaparecer()
+    }
+  }
+
+   method desaparecer() {
+    if (activa) {
       activa = false
-      personaje.congelar()
       game.removeVisual(self)
     }
   }
+  
 
 }
 
