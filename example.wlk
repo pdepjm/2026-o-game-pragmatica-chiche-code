@@ -75,7 +75,7 @@ object personaje {
     healthBar.actualizar()
 
     if (vidaActual == 0) {
-      personaje.gameOver()
+      self.gameOver()
     }
   }
 
@@ -273,13 +273,13 @@ method posicion(_posicion) {
 }
 
 object fondoPuntuacion {
-  method position() = game.at(0, marco.fila())
+  method position() = game.at(8, marco.fila())
   method image() = "puntuacion.png"
 }
 
 object marcador {
   var puntos = 0
-  method position() = game.at(1, marco.fila())
+  method position() = game.at(9, marco.fila())
   method text() = puntos.toString()
   method textColor() = "FFD700"
   method ganarPuntos(cantidad) {
@@ -309,7 +309,7 @@ object healthBar {
 
   var imagen = "vida/vida10.png"
 
-  method position() = game.at(0, 11)
+  method position() = game.at(0, marco.fila())
 
   method image() = imagen
 
