@@ -4,14 +4,20 @@ import example.*
 
 program LluviaDeObjetos {
 	game.title("Lluvia de objetos")
-	game.height(12)
+	game.height(13)
 	game.width(10)
 	game.cellSize(60)
 	game.ground("celda.png")
+
+	marco.dibujar()
+	game.addVisual(fondoPuntuacion)
+	game.addVisual(marcador)      
 	game.addVisual(personaje)
 
 	const generadorComida = new GeneradorObjetos(crear = {new Comida()})
 	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})
+	const generadorInspiracion = new GeneradorObjetos(crear = {new Inspiracion()})
+	const generadorDebuffHielo = new GeneradorObjetos(crear = {new DebuffHielo()})
 	
 	
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })
@@ -33,9 +39,21 @@ program LluviaDeObjetos {
 		generadorBomba.generar()
 	})
 
+
+	game.onTick(4000, "Generar inspiracion", {
+		generadorInspiracion.generar()
+	})
+
+
+	game.onTick(3500, "Generar debuff hielo", {
+		generadorDebuffHielo.generar()
+	})
+
 	game.onTick(600, "caida", {
 		generadorComida.actualizar()
 		generadorBomba.actualizar()
+		generadorInspiracion.actualizar()
+		generadorDebuffHielo.actualizar()
 	})
 
 	game.start()
