@@ -19,8 +19,7 @@ program LluviaDeObjetos {
 	const generadorBomba = new GeneradorObjetos(crear = {new Bomba()})
 	const generadorInspiracion = new GeneradorObjetos(crear = {new Inspiracion()})
 	const generadorDebuffHielo = new GeneradorObjetos(crear = {new DebuffHielo()})
-	
-	
+
 	keyboard.left().onPressDo({ personaje.moverIzquierda() })
 	keyboard.a().onPressDo({ personaje.moverIzquierda() })
 
@@ -32,7 +31,7 @@ program LluviaDeObjetos {
 
 	game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
 
-	game.onTick(2000, "Generar comida", {
+	game.onTick(1600, "Generar comida", {
 		generadorComida.generar()
 	})
 
@@ -55,6 +54,10 @@ program LluviaDeObjetos {
 		generadorBomba.actualizar()
 		generadorInspiracion.actualizar()
 		generadorDebuffHielo.actualizar()
+	})
+
+	game.onTick(7000, "crear lanza", {
+		generadorLanzas.lanzarRandom()
 	})
 
 	game.start()
