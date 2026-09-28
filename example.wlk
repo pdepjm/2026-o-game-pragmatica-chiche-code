@@ -1,3 +1,8 @@
+object gameOver {
+  method position() = game.at(2, 3)
+  method image() = "gameOver.png"
+}
+
 object personaje {
   var posicion = game.at(4,0)
   var saltando = false
@@ -39,6 +44,19 @@ object personaje {
     }
 
     healthBar.actualizar()
+
+    if (vidaActual == 0) {
+      personaje.gameOver()
+    }
+  }
+
+  method gameOver() {
+    game.removeTickEvent("caida")
+    game.removeTickEvent("Generar bomba")
+    game.removeTickEvent("Generar comida")
+
+    game.addVisual(gameOver)
+
   }
 
   method curar(cantidad) {
