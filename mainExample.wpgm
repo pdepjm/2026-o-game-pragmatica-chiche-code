@@ -1,6 +1,11 @@
 import wollok.game.*
 
-import example.*
+import personaje.*
+import objetos.*
+import lanza.*
+import buffs.*
+import debuffs.*
+import hud.*
 
 program LluviaDeObjetos {
 	game.title("Lluvia de objetos")
