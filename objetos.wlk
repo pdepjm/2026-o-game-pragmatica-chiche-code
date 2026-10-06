@@ -21,10 +21,9 @@ class GeneradorObjetos {
   }
 
   method posicionRandom() {
-    var xRandom = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].anyOne()
-    var posicionRandom = game.at(xRandom, marco.fila() - 1)
+    const xRandom = (0 .. game.width() - 1).anyOne()
 
-    return posicionRandom
+    return game.at(xRandom, marco.fila() - 1)
   }
 }
 class Comida {

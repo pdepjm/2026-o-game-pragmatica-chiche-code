@@ -1,41 +1,49 @@
 import wollok.game.*
 import hud.*
+import efectos.*
 
 object personaje {
   var posicion = game.at(4,0)
   var saltando = false
-  var puedeMoverse = true
-  var property multiplicador = 1
-  var inspiracionesActivas = 0
-  var congelamientosActivos = 0
-  var lastimadurasActivas = 0
+  // puede haber efectos repetidos: cada uno se saca con su propio timer
+  const efectosActivos = []
 
   const vidaMaxima = 10
   var vidaActual = 10
 
   method position() = posicion
   method image() =
-    if (lastimadurasActivas > 0 ) "personaje/personaje_lastimado.png"
-    else if (congelamientosActivos > 0) "personaje/personaje_congelado.png"
-    else if (inspiracionesActivas > 0) "personaje/personaje_dorado.png"
-    else "personaje/personaje.png"
+    if (efectosActivos.isEmpty()) "personaje/personaje.png"
+    else efectosActivos.min({ efecto => efecto.prioridad() }).image()
   method vida() = vidaActual
 
- 
+  method puedeMoverse() = efectosActivos.all({ efecto => efecto.permiteMoverse() })
+  method multiplicador() =
+    if (efectosActivos.isEmpty()) 1
+    else efectosActivos.max({ efecto => efecto.multiplicador() }).multiplicador()
+
+  method agregarEfecto(efecto) {
+    efectosActivos.add(efecto)
+  }
+
+  method quitarEfecto(efecto) {
+    efectosActivos.remove(efecto)
+  }
+
   method moverIzquierda() {
-    if (posicion.x() > 0 and puedeMoverse) {
+    if (posicion.x() > 0 and self.puedeMoverse()) {
       posicion = posicion.left(1)
     }
   }
 
   method moverDerecha() {
-    if (posicion.x() < game.width()-1 and puedeMoverse) {
+    if (posicion.x() < game.width()-1 and self.puedeMoverse()) {
       posicion = posicion.right(1)
     }
   }
 
   method saltar() {
-    if (not saltando and puedeMoverse) {
+    if (not saltando and self.puedeMoverse()) {
       saltando = true
       posicion = posicion.up(1)
       game.schedule(400, {
@@ -44,27 +52,6 @@ object personaje {
       })
     }
   }
-  method congelar() {
-    congelamientosActivos += 1
-    puedeMoverse = false
-    game.schedule(3000, { 
-      congelamientosActivos -= 1
-      if (congelamientosActivos == 0) {
-        puedeMoverse = true 
-      }
-    })
-  }
-  method inspirar() {
-    inspiracionesActivas += 1
-    multiplicador = 2
-    
-    game.schedule(5000, { 
-      inspiracionesActivas -= 1
-      if (inspiracionesActivas == 0) {
-        multiplicador = 1 
-      }
-    })
-  }
 
   method recibirDanio(danio) {
     vidaActual = vidaActual - danio
@@ -72,8 +59,7 @@ object personaje {
       vidaActual = 0
     }
 
-    lastimadurasActivas += 1
-    game.schedule(1000, { lastimadurasActivas -= 1 })
+    lastimado.aplicar(self)
 
     healthBar.actualizar()
 

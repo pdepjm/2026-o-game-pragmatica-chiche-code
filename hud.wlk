@@ -30,10 +30,10 @@ class CeldaMarco {
 }
 
 object marco {
-  method fila() = 12
+  method fila() = game.height() - 1
 
   method dibujar() {
-    (0 .. 9).forEach({ x =>
+    (0 .. game.width() - 1).forEach({ x =>
       game.addVisual(new CeldaMarco(position = game.at(x, self.fila())))
     })
   }

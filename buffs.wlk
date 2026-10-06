@@ -1,5 +1,6 @@
 import wollok.game.*
 import personaje.*
+import efectos.*
 
 class Inspiracion {
   var posicion = game.at(3, 11)
@@ -26,7 +27,7 @@ method posicion(_posicion) {
 
   method serAgarrado() {
     if (activa) {
-      personaje.inspirar() 
+      dorado.aplicar(personaje)
       self.desaparecer()
     }
   }

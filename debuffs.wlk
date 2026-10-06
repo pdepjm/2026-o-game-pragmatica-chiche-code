@@ -1,5 +1,6 @@
 import wollok.game.*
 import personaje.*
+import efectos.*
 
 class DebuffHielo {
   var posicion = game.at(6, 11)
@@ -26,7 +27,7 @@ method posicion(_posicion) {
 
   method serAgarrado() {
     if (activa) {
-      personaje.congelar() 
+      congelado.aplicar(personaje)
       self.desaparecer()
     }
   }
