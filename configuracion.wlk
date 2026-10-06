@@ -12,7 +12,7 @@ object configuracion {
   const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
 
-  method generadores() = [generadorComida, generadorBomba, generadorInspiracion, generadorDebuffHielo]
+  method generadores() = [generadorComida, generadorBomba, generadorInspiracion, generadorDebuffHielo, generadorCajas]
 
   method configurarTablero() {
     game.title("Lluvia de objetos")
@@ -50,9 +50,12 @@ object configuracion {
     game.onTick(2500, "Generar bomba", { generadorBomba.generar() })
     game.onTick(4000, "Generar inspiracion", { generadorInspiracion.generar() })
     game.onTick(3500, "Generar debuff hielo", { generadorDebuffHielo.generar() })
+    game.onTick(7000, "Generar Caja", { generadorCajas.generar() })
 
     game.onTick(600, "caida", {
       self.generadores().forEach({ generador => generador.actualizar() })
+      // por si desaparecio la caja en la que estaba parado
+      personaje.caer()
     })
 
     game.onTick(7000, "crear lanza", { generadorLanzas.lanzarRandom() })

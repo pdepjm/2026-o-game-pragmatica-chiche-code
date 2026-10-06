@@ -1,5 +1,6 @@
 import wollok.game.*
 import personaje.*
+import objetos.*
 import efectos.*
 
 class Inspiracion {
@@ -17,10 +18,10 @@ method posicion(_posicion) {
     
     method caer() {
     if (activa) {
-      if (posicion.y() > 0) {
-        posicion = posicion.down(1)
-      } else {
+      if (posicion.y() == 0) {
         self.desaparecer()
+      } else if (not generadorCajas.hayCajaEn(posicion.down(1))) {
+        posicion = posicion.down(1)
       }
     }
   }
