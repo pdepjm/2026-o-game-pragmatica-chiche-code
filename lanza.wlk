@@ -1,5 +1,6 @@
 import wollok.game.*
 import personaje.*
+import objetos.*
 import hud.*
 
 class SegmentoLanza {
@@ -31,6 +32,10 @@ class Lanza {
   var lado = "izquierda"
   var altura = "piso"
   var golpeado = false
+  var activa = true
+  var avanzando = true
+  // cuantos segmentos tiene afuera en este momento
+  var extension = 0
 
   const tiempoPaso = 400
   const segmentos = [
@@ -59,33 +64,56 @@ class Lanza {
   method adelante(unaPosicion) = if (lado == "izquierda") unaPosicion.right(1) else unaPosicion.left(1)
   method atras(unaPosicion) = if (lado == "izquierda") unaPosicion.left(1) else unaPosicion.right(1)
 
-  // en cada paso de ida aparece un segmento y en cada paso de vuelta se va el ultimo que aparecio
+  // programa los pasos que hacen falta para ir y volver completa. Si una caja la frena se retrae antes y los pasos que sobran no hacen nada
   method moverLanza() {
-    const cantidad = segmentos.size()
-
-    (0 .. cantidad - 1).forEach({ paso =>
-      game.schedule((paso + 1) * tiempoPaso, { self.extender(paso) })
-      game.schedule((2 * cantidad - paso) * tiempoPaso, { self.retraer(paso) })
+    (1 .. 2 * segmentos.size() + 1).forEach({ paso =>
+      game.schedule(paso * tiempoPaso, { self.darPaso() })
     })
-
-    game.schedule((2 * cantidad + 1) * tiempoPaso, { self.desaparecer() })
   }
 
-  method extender(paso) {
+  method puedeExtenderse() =
+    avanzando and extension < segmentos.size() and not generadorCajas.hayCajaEn(self.adelante(posicion))
+
+  method darPaso() {
+    if (self.puedeExtenderse()) {
+      self.extender()
+    } else {
+      // una vez que deja de avanzar no vuelve a extenderse, aunque la caja que la freno ya no este
+      avanzando = false
+      self.volver()
+    }
+  }
+
+  method volver() {
+    if (extension > 0) {
+      self.retraer()
+    } else {
+      self.desaparecer()
+    }
+  }
+
+  // la punta avanza, aparece un segmento nuevo en el borde y avanzan los que ya estaban
+  method extender() {
     posicion = self.adelante(posicion)
-    game.addVisual(segmentos.get(paso))
-    segmentos.take(paso).forEach({ segmento => segmento.avanzar() })
+    game.addVisual(segmentos.get(extension))
+    segmentos.take(extension).forEach({ segmento => segmento.avanzar() })
+    extension += 1
   }
 
-  method retraer(paso) {
+  // la punta retrocede, se va el ultimo segmento que aparecio y retroceden los que quedan
+  method retraer() {
+    extension -= 1
     posicion = self.atras(posicion)
-    game.removeVisual(segmentos.get(paso))
-    segmentos.take(paso).forEach({ segmento => segmento.retroceder() })
+    game.removeVisual(segmentos.get(extension))
+    segmentos.take(extension).forEach({ segmento => segmento.retroceder() })
   }
 
   method desaparecer() {
-    game.removeVisual(self)
-    generadorLanzas.liberar(lado, altura)
+    if (activa) {
+      activa = false
+      game.removeVisual(self)
+      generadorLanzas.liberar(lado, altura)
+    }
   }
 
   method position() = posicion
@@ -103,7 +131,7 @@ object generadorLanzas {
   const ocupados = []
 
   method lanzarRandom() {
-    const libres = spawns.filter({ spawn => not ocupados.contains(spawn) })
+    const libres = spawns.filter({ spawn => self.estaLibre(spawn) })
     if (not libres.isEmpty()) {
       const spawn = libres.anyOne()
       ocupados.add(spawn)
@@ -114,6 +142,10 @@ object generadorLanzas {
       advertencia.animacion()
     }
   }
+
+  // un spawn sirve si no tiene otra lanza ni una caja en su celda
+  method estaLibre(spawn) =
+    not ocupados.contains(spawn) and not generadorCajas.hayCajaEn(self.posicionDeSpawn(spawn.first(), spawn.last()))
 
   // la lanza avisa cuando termina para que su spawn se pueda volver a usar
   method liberar(lado, altura) {
@@ -167,8 +199,14 @@ class Advertencia {
 
   method desaparecer(){
     game.removeVisual(self)
-    lanza.spawn(lado, altura)
-    game.addVisual(lanza)
-    lanza.moverLanza()
+
+    if (generadorCajas.hayCajaEn(posicion)) {
+      // cayo una caja en el spawn durante la advertencia: la lanza no sale
+      generadorLanzas.liberar(lado, altura)
+    } else {
+      lanza.spawn(lado, altura)
+      game.addVisual(lanza)
+      lanza.moverLanza()
+    }
   }
 }
