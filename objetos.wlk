@@ -6,9 +6,6 @@ import dificultad.*
 class GeneradorObjetos {
   var listaObjetos = []
   const crear
-  const estaOcupada
-
-  method hayObjetoEn(posicion) = listaObjetos.any({ o => o.position() == posicion })
 
   method generar() {
     const libres = self.posicionesLibres()
@@ -22,7 +19,7 @@ class GeneradorObjetos {
 
   method posicionesLibres() = (0 .. game.width() - 1)
     .map({ x => game.at(x, marco.fila() - 1) })
-    .filter({ pos => not estaOcupada.apply(pos) })
+    .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 
   method actualizar() {
     listaObjetos.forEach({ objeto => objeto.caer() })
@@ -111,10 +108,13 @@ object generadorCajas {
   method hayCajaEn(posicion) = listaCajas.any({caja => caja.posicion() == posicion})
 
   method generar() {
-    const caja = new Caja()
-    caja.posicion(self.posicionRandom())
-    listaCajas.add(caja)
-    game.addVisual(caja)
+    const libres = self.posicionesLibres()
+    if (not libres.isEmpty()) {
+      const caja = new Caja()
+      caja.posicion(libres.anyOne())
+      listaCajas.add(caja)
+      game.addVisual(caja)
+    }
   }
 
   method actualizar() {
@@ -123,11 +123,9 @@ object generadorCajas {
     listaCajas = listaCajas.filter({caja => caja.estaActiva()})
   }
 
-  method posicionRandom() {
-    const xRandom = (0 .. game.width() - 1).anyOne()
-
-    return game.at(xRandom, marco.fila() - 1)
-  }
+  method posicionesLibres() = (0 .. game.width() - 1)
+    .map({ x => game.at(x, marco.fila() - 1) })
+    .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 }
 
 class Caja {

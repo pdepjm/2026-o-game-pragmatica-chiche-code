@@ -8,15 +8,15 @@ import hud.*
 import dificultad.*
 
 object configuracion {
-  const generadorManzana = new GeneradorObjetos(crear = { new Comida(imagen = "manzana.png", puntos = 10) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorBanana = new GeneradorObjetos(crear = { new Comida(imagen = "banana.png", puntos = 10) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorCereza = new GeneradorObjetos(crear = { new Comida(imagen = "cereza.png", puntos = 25) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorFrutilla = new GeneradorObjetos(crear = { new Comida(imagen = "frutilla.png", puntos = 25) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorNaranja = new GeneradorObjetos(crear = { new Comida(imagen = "naranja.png", puntos = 25) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorSandia = new GeneradorObjetos(crear = { new Comida(imagen = "sandia.png", puntos = 50) }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorBomba = new GeneradorObjetos(crear = { new Bomba() }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() }, estaOcupada = { pos => self.hayAlgoEn(pos) })
-  const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() }, estaOcupada = { pos => self.hayAlgoEn(pos) })
+  const generadorManzana = new GeneradorObjetos(crear = { new Comida(imagen = "manzana.png", puntos = 10) })
+  const generadorBanana = new GeneradorObjetos(crear = { new Comida(imagen = "banana.png", puntos = 10) })
+  const generadorCereza = new GeneradorObjetos(crear = { new Comida(imagen = "cereza.png", puntos = 25) })
+  const generadorFrutilla = new GeneradorObjetos(crear = { new Comida(imagen = "frutilla.png", puntos = 25) })
+  const generadorNaranja = new GeneradorObjetos(crear = { new Comida(imagen = "naranja.png", puntos = 25) })
+  const generadorSandia = new GeneradorObjetos(crear = { new Comida(imagen = "sandia.png", puntos = 50) })
+  const generadorBomba = new GeneradorObjetos(crear = { new Bomba() })
+  const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
+  const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
 
   method generadoresDeObjetos() = [
     generadorManzana, generadorBanana, generadorCereza,
@@ -25,9 +25,6 @@ object configuracion {
   ]
   
   method generadores() =  self.generadoresDeObjetos() + [generadorCajas]
-
-  method hayAlgoEn(pos) =
-    self.generadoresDeObjetos().any({ g => g.hayObjetoEn(pos) }) or generadorCajas.hayCajaEn(pos)
 
 
   method configurarTablero() {
