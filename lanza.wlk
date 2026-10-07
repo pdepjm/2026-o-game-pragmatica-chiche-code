@@ -2,7 +2,7 @@ import wollok.game.*
 import personaje.*
 import objetos.*
 import hud.*
-
+import dificultad.*
 class SegmentoLanza {
   var posicion  = game.at(0, 0)
   const lanza
@@ -37,7 +37,7 @@ class Lanza {
   // cuantos segmentos tiene afuera en este momento
   var extension = 0
 
-  const tiempoPaso = 400
+  method tiempoPaso() = dificultad.tiempoLanza()
   const segmentos = [
     new SegmentoLanza(lanza = self),
     new SegmentoLanza(lanza = self),
@@ -46,7 +46,7 @@ class Lanza {
 
   method serAgarrado() {
     if (not golpeado) {
-      marcador.ganarPuntos(-75)
+      dificultad.penalizar(-75)
       personaje.recibirDanio(3)
       golpeado = true
     }
@@ -67,7 +67,7 @@ class Lanza {
   // programa los pasos que hacen falta para ir y volver completa. Si una caja la frena se retrae antes y los pasos que sobran no hacen nada
   method moverLanza() {
     (1 .. 2 * segmentos.size() + 1).forEach({ paso =>
-      game.schedule(paso * tiempoPaso, { self.darPaso() })
+      game.schedule(paso * self.tiempoPaso(), { self.darPaso() })
     })
   }
 
