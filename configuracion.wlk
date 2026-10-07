@@ -18,27 +18,26 @@ object configuracion {
   const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() }, estaOcupada = { pos => self.hayAlgoEn(pos) })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() }, estaOcupada = { pos => self.hayAlgoEn(pos) })
 
-method generadoresDeObjetos() = [
+  method generadoresDeObjetos() = [
     generadorManzana, generadorBanana, generadorCereza,
     generadorFrutilla, generadorNaranja, generadorSandia,
     generadorBomba, generadorInspiracion, generadorDebuffHielo
   ]
+  
+  method generadores() =  self.generadoresDeObjetos() + [generadorCajas]
 
   method hayAlgoEn(pos) =
     self.generadoresDeObjetos().any({ g => g.hayObjetoEn(pos) }) or generadorCajas.hayCajaEn(pos)
 
-   method generadores() = [
-    generadorManzana, generadorBanana, generadorCereza,
-    generadorFrutilla, generadorNaranja, generadorSandia,
-    generadorBomba, generadorInspiracion, generadorDebuffHielo, generadorCajas
-  ]
- method configurarTablero() {
+
+  method configurarTablero() {
     game.title("Lluvia de objetos")
     game.height(13)
     game.width(10)
     game.cellSize(60)
     game.ground("celda.png")
   }
+
   method configurarVisuales() {
     marco.dibujar()
     game.addVisual(fondoPuntuacion)
@@ -66,17 +65,19 @@ method generadoresDeObjetos() = [
     game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
   }
 
- method empezar(unaDificultad) {
+  method empezar(unaDificultad) {
     if (not dificultad.empezado()) {
       dificultad.elegir(unaDificultad)
       game.removeVisual(selectorDificultad)
     }
   }
+
   method spawnear(generador) {
     if (dificultad.empezado()) {
       generador.generar()
     }
   }
+
   method configurarTicks() {
     game.onTick(2500, "Generar manzana", { self.spawnear(generadorManzana) })
     game.onTick(2800, "Generar banana", { self.spawnear(generadorBanana) })

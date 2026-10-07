@@ -37,12 +37,13 @@ class Lanza {
   // cuantos segmentos tiene afuera en este momento
   var extension = 0
 
-  method tiempoPaso() = dificultad.tiempoLanza()
   const segmentos = [
     new SegmentoLanza(lanza = self),
     new SegmentoLanza(lanza = self),
     new SegmentoLanza(lanza = self)
   ]
+
+  method tiempoPaso() = dificultad.tiempoLanza()
 
   method serAgarrado() {
     if (not golpeado) {
