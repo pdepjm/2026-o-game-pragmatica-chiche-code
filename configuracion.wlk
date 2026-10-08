@@ -15,13 +15,13 @@ object configuracion {
   const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
   const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
-   
-   method generadoresDeObjetos() = [
+
+  method generadoresDeObjetos() = [
     generadorNormal, generadorRara, generadorEpica, generadorCorazon,
     generadorBomba, generadorInspiracion, generadorDebuffHielo
   ]
-  method generadores() =  self.generadoresDeObjetos() + [generadorCajas]
 
+  method generadores() = self.generadoresDeObjetos() + [generadorCajas]
 
   method configurarTablero() {
     game.title("Lluvia de objetos")
@@ -58,17 +58,20 @@ object configuracion {
   method configurarColisiones() {
     game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
   }
-method programarLanza() {
+
+  method programarLanza() {
     game.schedule(dificultad.tiempoEntreLanzas(), {
       generadorLanzas.lanzarRandom()
       self.programarLanza()
     })
   }
- method empezar(unaDificultad) {
+
+  method empezar(unaDificultad) {
     if (not dificultad.empezado()) {
       dificultad.elegir(unaDificultad)
       game.removeVisual(selectorDificultad)
       self.programarLanza()
+      game.onTick(30000, "acelerar lanzas", { dificultad.acelerar() })
     }
   }
 
@@ -79,19 +82,21 @@ method programarLanza() {
   }
 
   method configurarTicks() {
-    game.onTick(2500, "Generar fruta normal", { self.spawnear(generadorNormal) })
-    game.onTick(5000, "Generar fruta rara", { self.spawnear(generadorRara) })
-    game.onTick(9000, "Generar fruta epica", { self.spawnear(generadorEpica) })
-    game.onTick(2500, "Generar bomba", { self.spawnear(generadorBomba) })
+    game.onTick(1500, "Generar fruta normal", { self.spawnear(generadorNormal) })
+    game.onTick(3000, "Generar fruta rara", { self.spawnear(generadorRara) })
+    game.onTick(6000, "Generar fruta epica", { self.spawnear(generadorEpica) })
+    game.onTick(3000, "Generar bomba", { self.spawnear(generadorBomba) })
     game.onTick(4000, "Generar inspiracion", { self.spawnear(generadorInspiracion) })
-    game.onTick(3500, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
+    game.onTick(4000, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
     game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
     game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })
+
     game.onTick(600, "caida", {
       self.generadores().forEach({ generador => generador.actualizar() })
       // por si desaparecio la caja en la que estaba parado
       personaje.caer()
     })
+
     game.onTick(1000, "cronometro", { if (dificultad.empezado()) temporizador.avanzar() })
-    game.onTick(30000, "acelerar lanzas", { if (dificultad.empezado()) dificultad.acelerar() })  }
+  }
 }

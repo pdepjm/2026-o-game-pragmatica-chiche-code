@@ -2,7 +2,7 @@ import wollok.game.*
 import personaje.*
 
 object gameOver {
-  method position() = game.at(2, 3)
+  method position() = game.at(2, 4)
   method image() = "gameOver.png"
 }
 
@@ -23,10 +23,11 @@ object marcador {
     puntos = 0
   }
 }
+
 object temporizador {
   var segundos = 0
 
-   method position() = game.at(9, marco.fila() - 1)
+  method position() = game.at(9, marco.fila() - 1)
   method textColor() = "FFD700"
 
   method text() {
@@ -39,6 +40,7 @@ object temporizador {
   method avanzar() { segundos = segundos + 1 }
   method reiniciar() { segundos = 0 }
 }
+
 class CeldaMarco {
   const property position
   method image() = "celda2.png"
@@ -47,7 +49,7 @@ class CeldaMarco {
 object marco {
   method fila() = game.height() - 1
 
-   method dibujar() {
+  method dibujar() {
     (0 .. game.width() - 1).forEach({ x =>
       game.addVisual(new CeldaMarco(position = game.at(x, self.fila())))
       game.addVisual(new CeldaMarco(position = game.at(x, self.fila() - 1)))

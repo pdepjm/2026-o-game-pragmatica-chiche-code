@@ -1,5 +1,4 @@
 import personaje.*
-
 describe "test del juego"{
 
 

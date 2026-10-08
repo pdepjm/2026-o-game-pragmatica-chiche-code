@@ -7,9 +7,9 @@ class DebuffHielo {
   var posicion = game.at(6, 11)
   var activa = true
 
- method estaActiva() = activa
+  method estaActiva() = activa
 
-method posicion(_posicion) {
+  method posicion(_posicion) {
     posicion = _posicion
   }
 
@@ -33,12 +33,10 @@ method posicion(_posicion) {
     }
   }
 
-   method desaparecer() {
+  method desaparecer() {
     if (activa) {
       activa = false
       game.removeVisual(self)
     }
   }
-  
-
 }

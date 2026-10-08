@@ -26,6 +26,7 @@ class GeneradorObjetos {
     listaObjetos = listaObjetos.filter({ objeto => objeto.estaActiva() })
   }
 }
+
 class Comida {
   var posicion = game.at(2,11)
   var activa = true
@@ -63,6 +64,7 @@ class Comida {
     }
   }
 }
+
 class Corazon {
   var posicion = game.at(2,11)
   var activa = true
@@ -94,6 +96,7 @@ class Corazon {
     }
   }
 }
+
 class Bomba {
   var posicion = game.at(7, 11)
   var activa = true
