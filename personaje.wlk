@@ -53,7 +53,7 @@ object personaje {
   }
 
   method puedeSaltar() =
-    not saltando and self.estaApoyado() and self.puedeMoverse() and posicion.y() < marco.fila() - 1 and self.estaLibre(posicion.up(1))
+    not saltando and self.estaApoyado() and self.puedeMoverse() and posicion.y() < marco.fila() - 2 and self.estaLibre(posicion.up(1))
 
   method saltar() {
     if (self.puedeSaltar()) {

@@ -1,34 +1,37 @@
 import wollok.game.*
 import personaje.*
 import hud.*
+import dificultad.*
 
 class GeneradorObjetos {
-  
   var listaObjetos = []
   const crear
 
   method generar() {
-    const objeto = crear.apply()
-    objeto.posicion(self.posicionRandom())
-    listaObjetos.add(objeto)
-    game.addVisual(objeto)
+    const libres = self.posicionesLibres()
+    if (not libres.isEmpty()) {
+      const objeto = crear.apply()
+      objeto.posicion(libres.anyOne())
+      listaObjetos.add(objeto)
+      game.addVisual(objeto)
+    }
   }
+
+  method posicionesLibres() = (0 .. game.width() - 1)
+    .map({ x => game.at(x, marco.fila() - 2) })
+    .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 
   method actualizar() {
-    listaObjetos.forEach({objeto => objeto.caer()})
-
-    listaObjetos = listaObjetos.filter({objeto => objeto.estaActiva()})
-  }
-
-  method posicionRandom() {
-    const xRandom = (0 .. game.width() - 1).anyOne()
-
-    return game.at(xRandom, marco.fila() - 1)
+    listaObjetos.forEach({ objeto => objeto.caer() })
+    listaObjetos = listaObjetos.filter({ objeto => objeto.estaActiva() })
   }
 }
+
 class Comida {
   var posicion = game.at(2,11)
   var activa = true
+  const imagen
+  const puntos
 
   method estaActiva() = activa
 
@@ -37,7 +40,7 @@ class Comida {
   }
 
   method position() = posicion
-  method image()= "apple.png"
+  method image() = imagen
 
   method caer(){
     if(activa){
@@ -48,17 +51,50 @@ class Comida {
       }
     }
   }
- method serAgarrado(){
-  self.desaparecer()
-  marcador.ganarPuntos(10 * personaje.multiplicador())
-  personaje.curar(1)
- }
-method desaparecer(){
-  if(activa){
-    activa = false
-    game.removeVisual(self)
+
+  method serAgarrado(){
+    self.desaparecer()
+    marcador.ganarPuntos(puntos * personaje.multiplicador())
+  }
+
+  method desaparecer(){
+    if(activa){
+      activa = false
+      game.removeVisual(self)
+    }
   }
 }
+
+class Corazon {
+  var posicion = game.at(2,11)
+  var activa = true
+
+  method estaActiva() = activa
+  method posicion(_posicion) { posicion = _posicion }
+  method position() = posicion
+  method image() = "corazon.png"
+
+  method caer(){
+    if(activa){
+      if(posicion.y() == 0){
+        self.desaparecer()
+      } else if(not generadorCajas.hayCajaEn(posicion.down(1))){
+        posicion = posicion.down(1)
+      }
+    }
+  }
+
+  method serAgarrado(){
+    self.desaparecer()
+    personaje.curar(1)
+  }
+
+  method desaparecer(){
+    if(activa){
+      activa = false
+      game.removeVisual(self)
+    }
+  }
 }
 
 class Bomba {
@@ -86,7 +122,7 @@ class Bomba {
 
   method serAgarrado() {
     self.desaparecer()
-    marcador.ganarPuntos(-50)
+    dificultad.penalizar(-50)
     personaje.recibirDanio(2)
   }
 
@@ -105,10 +141,13 @@ object generadorCajas {
   method hayCajaEn(posicion) = listaCajas.any({caja => caja.posicion() == posicion})
 
   method generar() {
-    const caja = new Caja()
-    caja.posicion(self.posicionRandom())
-    listaCajas.add(caja)
-    game.addVisual(caja)
+    const libres = self.posicionesLibres()
+    if (not libres.isEmpty()) {
+      const caja = new Caja()
+      caja.posicion(libres.anyOne())
+      listaCajas.add(caja)
+      game.addVisual(caja)
+    }
   }
 
   method actualizar() {
@@ -117,11 +156,9 @@ object generadorCajas {
     listaCajas = listaCajas.filter({caja => caja.estaActiva()})
   }
 
-  method posicionRandom() {
-    const xRandom = (0 .. game.width() - 1).anyOne()
-
-    return game.at(xRandom, marco.fila() - 1)
-  }
+  method posicionesLibres() = (0 .. game.width() - 1)
+    .map({ x => game.at(x, marco.fila() - 2) })
+    .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 }
 
 class Caja {
