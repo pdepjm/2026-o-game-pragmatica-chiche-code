@@ -8,28 +8,24 @@ import hud.*
 import dificultad.*
 
 object configuracion {
-  const generadorManzana = new GeneradorObjetos(crear = { new Comida(imagen = "manzana.png", puntos = 10) })
-  const generadorBanana = new GeneradorObjetos(crear = { new Comida(imagen = "banana.png", puntos = 10) })
-  const generadorCereza = new GeneradorObjetos(crear = { new Comida(imagen = "cereza.png", puntos = 25) })
-  const generadorFrutilla = new GeneradorObjetos(crear = { new Comida(imagen = "frutilla.png", puntos = 25) })
-  const generadorNaranja = new GeneradorObjetos(crear = { new Comida(imagen = "naranja.png", puntos = 25) })
-  const generadorSandia = new GeneradorObjetos(crear = { new Comida(imagen = "sandia.png", puntos = 50) })
+  const generadorNormal = new GeneradorObjetos(crear = { new Comida(imagen = ["manzana.png", "banana.png"].anyOne(), puntos = 10) })
+  const generadorRara = new GeneradorObjetos(crear = { new Comida(imagen = ["frutilla.png", "naranja.png"].anyOne(), puntos = 25) })
+  const generadorEpica = new GeneradorObjetos(crear = { new Comida(imagen = ["sandia.png", "cereza.png"].anyOne(), puntos = 50) })
   const generadorBomba = new GeneradorObjetos(crear = { new Bomba() })
   const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
-
-  method generadoresDeObjetos() = [
-    generadorManzana, generadorBanana, generadorCereza,
-    generadorFrutilla, generadorNaranja, generadorSandia,
+  const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
+   
+   method generadoresDeObjetos() = [
+    generadorNormal, generadorRara, generadorEpica, generadorCorazon,
     generadorBomba, generadorInspiracion, generadorDebuffHielo
   ]
-  
   method generadores() =  self.generadoresDeObjetos() + [generadorCajas]
 
 
   method configurarTablero() {
     game.title("Lluvia de objetos")
-    game.height(13)
+    game.height(14)
     game.width(10)
     game.cellSize(60)
     game.ground("celda.png")
@@ -42,6 +38,7 @@ object configuracion {
     game.addVisual(personaje)
     game.addVisual(healthBar)
     game.addVisual(selectorDificultad)
+    game.addVisual(temporizador)
   }
 
   method configurarTeclado() {
@@ -61,11 +58,17 @@ object configuracion {
   method configurarColisiones() {
     game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
   }
-
-  method empezar(unaDificultad) {
+method programarLanza() {
+    game.schedule(dificultad.tiempoEntreLanzas(), {
+      generadorLanzas.lanzarRandom()
+      self.programarLanza()
+    })
+  }
+ method empezar(unaDificultad) {
     if (not dificultad.empezado()) {
       dificultad.elegir(unaDificultad)
       game.removeVisual(selectorDificultad)
+      self.programarLanza()
     }
   }
 
@@ -76,23 +79,19 @@ object configuracion {
   }
 
   method configurarTicks() {
-    game.onTick(2500, "Generar manzana", { self.spawnear(generadorManzana) })
-    game.onTick(2800, "Generar banana", { self.spawnear(generadorBanana) })
-    game.onTick(4500, "Generar cereza", { self.spawnear(generadorCereza) })
-    game.onTick(4800, "Generar frutilla", { self.spawnear(generadorFrutilla) })
-    game.onTick(5200, "Generar naranja", { self.spawnear(generadorNaranja) })
-    game.onTick(9000, "Generar sandia", { self.spawnear(generadorSandia) })
+    game.onTick(2500, "Generar fruta normal", { self.spawnear(generadorNormal) })
+    game.onTick(5000, "Generar fruta rara", { self.spawnear(generadorRara) })
+    game.onTick(9000, "Generar fruta epica", { self.spawnear(generadorEpica) })
     game.onTick(2500, "Generar bomba", { self.spawnear(generadorBomba) })
     game.onTick(4000, "Generar inspiracion", { self.spawnear(generadorInspiracion) })
     game.onTick(3500, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
     game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
-
+    game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })
     game.onTick(600, "caida", {
       self.generadores().forEach({ generador => generador.actualizar() })
       // por si desaparecio la caja en la que estaba parado
       personaje.caer()
     })
-
-    game.onTick(7000, "crear lanza", { if (dificultad.empezado()) generadorLanzas.lanzarRandom() })
-  }
+    game.onTick(1000, "cronometro", { if (dificultad.empezado()) temporizador.avanzar() })
+    game.onTick(30000, "acelerar lanzas", { if (dificultad.empezado()) dificultad.acelerar() })  }
 }

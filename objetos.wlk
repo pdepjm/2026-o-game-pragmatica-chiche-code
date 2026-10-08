@@ -18,7 +18,7 @@ class GeneradorObjetos {
   }
 
   method posicionesLibres() = (0 .. game.width() - 1)
-    .map({ x => game.at(x, marco.fila() - 1) })
+    .map({ x => game.at(x, marco.fila() - 2) })
     .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 
   method actualizar() {
@@ -63,7 +63,37 @@ class Comida {
     }
   }
 }
+class Corazon {
+  var posicion = game.at(2,11)
+  var activa = true
 
+  method estaActiva() = activa
+  method posicion(_posicion) { posicion = _posicion }
+  method position() = posicion
+  method image() = "corazon.png"
+
+  method caer(){
+    if(activa){
+      if(posicion.y() == 0){
+        self.desaparecer()
+      } else if(not generadorCajas.hayCajaEn(posicion.down(1))){
+        posicion = posicion.down(1)
+      }
+    }
+  }
+
+  method serAgarrado(){
+    self.desaparecer()
+    personaje.curar(1)
+  }
+
+  method desaparecer(){
+    if(activa){
+      activa = false
+      game.removeVisual(self)
+    }
+  }
+}
 class Bomba {
   var posicion = game.at(7, 11)
   var activa = true
@@ -124,7 +154,7 @@ object generadorCajas {
   }
 
   method posicionesLibres() = (0 .. game.width() - 1)
-    .map({ x => game.at(x, marco.fila() - 1) })
+    .map({ x => game.at(x, marco.fila() - 2) })
     .filter({ pos => game.getObjectsIn(pos).isEmpty() })
 }
 
