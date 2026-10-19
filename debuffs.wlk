@@ -10,3 +10,11 @@ class DebuffHielo inherits ObjetoQueCae {
     congelado.aplicar(personaje)
   }
 }
+
+class DebuffParasito inherits ObjetoQueCae {
+  override method image() = "parasito.png" 
+
+  override method efectoAlAgarrar() {
+    personaje.infectarParasito()
+  }
+}

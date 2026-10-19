@@ -81,7 +81,9 @@ class Comida inherits ObjetoQueCae {
     } else {
       marcador.ganarPuntos(puntos * personaje.multiplicador())
     }
+    personaje.comioManzanaParasito()
   }
+
 }
 
 class Corazon inherits ObjetoQueCae {
