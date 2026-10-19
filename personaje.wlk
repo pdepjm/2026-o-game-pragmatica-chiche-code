@@ -124,4 +124,16 @@ object personaje {
   }
 
   method tieneEspejo() = efectosActivos.contains(espejoMetabolico)
+
+  method tieneParasito() = efectosActivos.contains(infectado)
+
+  method comioComida() {
+    if (self.tieneParasito()) {
+      infectado.sumarComida(self)
+    }
+  }
+
+  method sacarParasito() {
+    self.quitarEfecto(infectado)
+  }
 }

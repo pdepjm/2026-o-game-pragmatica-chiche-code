@@ -16,10 +16,11 @@ object configuracion {
   const generadorEspejo = new GeneradorObjetos(crear = { new EspejoMetabolico() })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
   const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
+  const generadorDebuffParasito = new GeneradorObjetos(crear = { new DebuffParasito() })
 
   method generadoresDeObjetos() = [
     generadorNormal, generadorRara, generadorEpica, generadorCorazon,
-    generadorBomba, generadorInspiracion, generadorEspejo, generadorDebuffHielo
+    generadorBomba, generadorInspiracion, generadorEspejo, generadorDebuffHielo, generadorDebuffParasito
   ]
 
   method generadores() = self.generadoresDeObjetos() + [generadorCajas]
@@ -92,6 +93,7 @@ object configuracion {
     game.onTick(4000, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
     game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
     game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })
+    game.onTick(25000, "Generar debuff parasito", { self.spawnear(generadorDebuffParasito) })
 
     game.onTick(600, "caida", {
       self.generadores().forEach({ generador => generador.actualizar() })

@@ -47,6 +47,7 @@ class Lanza {
 
   method serAgarrado() {
     if (not golpeado) {
+      personaje.sacarParasito()
       dificultad.penalizar(-75)
       personaje.recibirDanio(3)
       golpeado = true
