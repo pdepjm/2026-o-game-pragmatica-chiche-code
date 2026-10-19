@@ -123,4 +123,5 @@ object personaje {
     healthBar.actualizar()
   }
 
+  method tieneEspejo() = efectosActivos.contains(espejoMetabolico)
 }

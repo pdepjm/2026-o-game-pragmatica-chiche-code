@@ -10,3 +10,11 @@ class Inspiracion inherits ObjetoQueCae {
     dorado.aplicar(personaje)
   }
 }
+
+class EspejoMetabolico inherits ObjetoQueCae {
+  override method image() = "espejoMetabolico.png"
+
+  override method efectoAlAgarrar() {
+    espejoMetabolico.aplicar(personaje)
+  }
+}

@@ -35,3 +35,9 @@ object dorado inherits Efecto {
   override method duracion() = 5000
   override method multiplicador() = 2
 }
+
+object espejoMetabolico inherits Efecto {
+  override method prioridad() = 4
+  override method image() = "personaje/personaje_espejo.png"
+  override method duracion() = 5000
+}
