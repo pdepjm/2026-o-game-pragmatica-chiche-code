@@ -12,8 +12,8 @@ object personaje {
   // puede haber efectos repetidos: cada uno se saca con su propio timer
   const efectosActivos = []
 
-  const vidaMaxima = 10
-  var vidaActual = 10
+  const vidaMaxima = 8
+  var vidaActual = 8
 
   method position() = posicion
   method image() =

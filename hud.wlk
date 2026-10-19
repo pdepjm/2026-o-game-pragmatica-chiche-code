@@ -59,7 +59,7 @@ object marco {
 
 object healthBar {
 
-  var imagen = "vida/vida10.png"
+  var imagen = "vida/vida8.png"
 
   method position() = game.at(0, marco.fila())
 
