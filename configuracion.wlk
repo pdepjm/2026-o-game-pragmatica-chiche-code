@@ -11,14 +11,15 @@ object configuracion {
   const generadorNormal = new GeneradorObjetos(crear = { new Comida(imagen = ["manzana.png", "banana.png"].anyOne(), puntos = 10) })
   const generadorRara = new GeneradorObjetos(crear = { new Comida(imagen = ["frutilla.png", "naranja.png"].anyOne(), puntos = 25) })
   const generadorEpica = new GeneradorObjetos(crear = { new Comida(imagen = ["sandia.png", "cereza.png"].anyOne(), puntos = 50) })
-  const generadorBomba = new GeneradorObjetos(crear = { new Bomba() })
+  const generadorBomba = new GeneradorObjetos(crear = { new Bomba(puntos = 25) })
   const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
+  const generadorEspejo = new GeneradorObjetos(crear = { new EspejoMetabolico() })
   const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
   const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
 
   method generadoresDeObjetos() = [
     generadorNormal, generadorRara, generadorEpica, generadorCorazon,
-    generadorBomba, generadorInspiracion, generadorDebuffHielo
+    generadorBomba, generadorInspiracion, generadorEspejo, generadorDebuffHielo
   ]
 
   method generadores() = self.generadoresDeObjetos() + [generadorCajas]
@@ -87,6 +88,7 @@ object configuracion {
     game.onTick(6000, "Generar fruta epica", { self.spawnear(generadorEpica) })
     game.onTick(3000, "Generar bomba", { self.spawnear(generadorBomba) })
     game.onTick(4000, "Generar inspiracion", { self.spawnear(generadorInspiracion) })
+    game.onTick(3000, "Generar espejo metabolico", { self.spawnear(generadorEspejo) })
     game.onTick(4000, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
     game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
     game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })
