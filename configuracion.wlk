@@ -88,7 +88,7 @@ object configuracion {
     game.onTick(6000, "Generar fruta epica", { self.spawnear(generadorEpica) })
     game.onTick(3000, "Generar bomba", { self.spawnear(generadorBomba) })
     game.onTick(4000, "Generar inspiracion", { self.spawnear(generadorInspiracion) })
-    game.onTick(3000, "Generar espejo metabolico", { self.spawnear(generadorEspejo) })
+    game.onTick(4500, "Generar espejo metabolico", { self.spawnear(generadorEspejo) })
     game.onTick(4000, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
     game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
     game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })

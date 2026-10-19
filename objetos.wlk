@@ -65,19 +65,22 @@ class ObjetoQueCae {
       game.removeVisual(self)
     }
   }
+
+  method lastimar() {
+    dificultad.penalizar(-50)
+    personaje.recibirDanio(2)
+  }
 }
 
 class Comida inherits ObjetoQueCae {
   const imagen
   const puntos
 
-  method puntos() = puntos
   override method image() = imagen
 
   override method efectoAlAgarrar(){
     if (personaje.tieneEspejo()) {
-      dificultad.penalizar(-50)
-      personaje.recibirDanio(2)
+      self.lastimar()
     } else {
       marcador.ganarPuntos(puntos * personaje.multiplicador())
     }
@@ -101,8 +104,7 @@ class Bomba inherits ObjetoQueCae {
     if (personaje.tieneEspejo()) {
       marcador.ganarPuntos( puntos * personaje.multiplicador())
     } else {
-      dificultad.penalizar(-50)
-      personaje.recibirDanio(2)
+      self.lastimar()
     }
   }
 }
