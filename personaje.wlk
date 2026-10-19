@@ -7,13 +7,10 @@ object personaje {
   var posicion = game.at(4,0)
   var saltando = false
   var cayendo = false
-  var tieneParasito = false
-  var comidasConParasito = 0
   // cuanto tarda en bajar cada celda cuando cae
   const tiempoCaida = 300
   // puede haber efectos repetidos: cada uno se saca con su propio timer
   const efectosActivos = []
-  
 
   const vidaMaxima = 8
   var vidaActual = 8
@@ -128,29 +125,15 @@ object personaje {
 
   method tieneEspejo() = efectosActivos.contains(espejoMetabolico)
 
-  method tieneParasito() = tieneParasito
+  method tieneParasito() = efectosActivos.contains(infectado)
 
-  method infectarParasito() {
-    tieneParasito = true
-    comidasConParasito = 0
-  }
-
-  method comioManzanaParasito() {
-    if(tieneParasito) {
-      comidasConParasito += 1
-      if(comidasConParasito >= 5) {
-        self.explotarParasito()
-      }
+  method comioComida() {
+    if (self.tieneParasito()) {
+      infectado.sumarComida(self)
     }
   }
-  method explotarParasito() {
-    tieneParasito = false
-    comidasConParasito = 0
-    self.recibirDanio(5)
-  }
 
-  method curarParasito() {
-  tieneParasito = false
-  comidasConParasito = 0
-}
+  method sacarParasito() {
+    self.quitarEfecto(infectado)
+  }
 }

@@ -47,14 +47,10 @@ class Lanza {
 
   method serAgarrado() {
     if (not golpeado) {
-      if(personaje.tieneParasito()){
-        personaje.curarParasito()
-      } else{
-        dificultad.penalizar(-75)
-        personaje.recibirDanio(3)
-      }
-       golpeado = true
-      
+      personaje.sacarParasito()
+      dificultad.penalizar(-75)
+      personaje.recibirDanio(3)
+      golpeado = true
     }
   }
 
@@ -215,5 +211,4 @@ class Advertencia {
       lanza.moverLanza()
     }
   }
-  
 }
