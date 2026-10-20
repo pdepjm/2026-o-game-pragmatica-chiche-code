@@ -1,34 +1,26 @@
-@startuml
+@startuml diagrama_tp
 skinparam classAttributeIconSize 0
+skinparam backgroundColor white
 
 object personaje {
   vidaActual
   saltando
-  vida()
+  cayendo
   moverIzquierda()
   moverDerecha()
   saltar()
   caer()
   recibirDanio(danio)
   curar(cantidad)
-  agregarEfecto(efecto)
-  quitarEfecto(efecto)
-  tieneEspejo()
-  tieneParasito()
   comioComida()
   sacarParasito()
 }
 
 abstract class Efecto {
-  {abstract} prioridad()
-  {abstract} image()
-  permiteMoverse()
-  multiplicador()
   aplicar(unPersonaje)
 }
 
 abstract class EfectoTemporal {
-  {abstract} duracion()
   aplicar(unPersonaje)
 }
 
@@ -57,11 +49,9 @@ abstract class ObjetoQueCae {
   serAgarrado()
   {abstract} efectoAlAgarrar()
   desaparecer()
-  lastimar()
 }
 
 class Comida {
-  imagen
   puntos
 }
 class Corazon
@@ -131,7 +121,6 @@ generadorLanzas ..> Advertencia : usa (crea) >
 Lanza ..> generadorLanzas : usa >
 Lanza ..> personaje : usa >
 
-' no existe en el codigo: representa el polimorfismo entre facil y dificil
 interface EstadoDificultad {
   penalizar(puntos)
   tiempoLanza()
@@ -150,39 +139,18 @@ object dificultad {
 dificultad -> "1" EstadoDificultad : actual >
 Lanza ..> dificultad : usa >
 
-object marcador {
-  puntos
-  ganarPuntos(cantidad)
+package "HUD y UI" {
+  object marcador {
+    puntos
+    ganarPuntos(cantidad)
+  }
+  object healthBar {
+    actualizar()
+  }
+  object temporizador {
+    segundos
+    avanzar()
+  }
+  object gameOver
 }
-object healthBar {
-  actualizar()
-}
-object temporizador {
-  segundos
-  avanzar()
-}
-object gameOver
-
-Comida ..> marcador : usa >
-Bomba ..> marcador : usa >
-dificil ..> marcador : usa >
-personaje ..> healthBar : usa >
-personaje ..> gameOver : usa >
-healthBar ..> personaje : usa >
-
-object configuracion {
-  configurarTablero()
-  configurarVisuales()
-  configurarTeclado()
-  configurarColisiones()
-  configurarTicks()
-  empezar(unaDificultad)
-  spawnear(generador)
-}
-configuracion -> "*" GeneradorObjetos : generadores >
-configuracion ..> personaje : usa >
-configuracion ..> dificultad : usa >
-configuracion ..> generadorLanzas : usa >
-configuracion ..> temporizador : usa >
-
 @enduml
