@@ -1,0 +1,188 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+object personaje {
+  vidaActual
+  saltando
+  vida()
+  moverIzquierda()
+  moverDerecha()
+  saltar()
+  caer()
+  recibirDanio(danio)
+  curar(cantidad)
+  agregarEfecto(efecto)
+  quitarEfecto(efecto)
+  tieneEspejo()
+  tieneParasito()
+  comioComida()
+  sacarParasito()
+}
+
+abstract class Efecto {
+  {abstract} prioridad()
+  {abstract} image()
+  permiteMoverse()
+  multiplicador()
+  aplicar(unPersonaje)
+}
+
+abstract class EfectoTemporal {
+  {abstract} duracion()
+  aplicar(unPersonaje)
+}
+
+object lastimado
+object congelado
+object dorado
+object espejoMetabolico
+object infectado {
+  comidas
+  aplicar(unPersonaje)
+  sumarComida(unPersonaje)
+}
+
+EfectoTemporal -up-|> Efecto
+lastimado -up-|> EfectoTemporal
+congelado -up-|> EfectoTemporal
+dorado -up-|> EfectoTemporal
+espejoMetabolico -up-|> EfectoTemporal
+infectado -up-|> Efecto
+
+personaje -> "*" Efecto : efectosActivos >
+
+abstract class ObjetoQueCae {
+  activa
+  caer()
+  serAgarrado()
+  {abstract} efectoAlAgarrar()
+  desaparecer()
+  lastimar()
+}
+
+class Comida {
+  imagen
+  puntos
+}
+class Corazon
+class Bomba {
+  puntos
+}
+class Caja {
+  ticksRestantes
+  caer()
+  serAgarrado()
+  descontarTick()
+}
+class Inspiracion
+class EspejoMetabolico
+class DebuffHielo
+class DebuffParasito
+
+Comida -up-|> ObjetoQueCae
+Corazon -up-|> ObjetoQueCae
+Bomba -up-|> ObjetoQueCae
+Caja -up-|> ObjetoQueCae
+Inspiracion -up-|> ObjetoQueCae
+EspejoMetabolico -up-|> ObjetoQueCae
+DebuffHielo -up-|> ObjetoQueCae
+DebuffParasito -up-|> ObjetoQueCae
+
+ObjetoQueCae ..> personaje : usa >
+
+class GeneradorObjetos {
+  generar()
+  actualizar()
+}
+object generadorCajas {
+  hayCajaEn(posicion)
+}
+
+generadorCajas -up-|> GeneradorObjetos
+GeneradorObjetos -> "*" ObjetoQueCae : listaObjetos >
+
+personaje ..> generadorCajas : usa >
+ObjetoQueCae ..> generadorCajas : usa >
+
+class Lanza {
+  moverLanza()
+  extender()
+  retraer()
+  serAgarrado()
+}
+class SegmentoLanza {
+  avanzar()
+  retroceder()
+}
+
+Lanza "1" <--> "*" SegmentoLanza
+
+class Advertencia {
+  animacion()
+}
+Advertencia -> "1" Lanza : lanza >
+
+object generadorLanzas {
+  ocupados
+  lanzarRandom()
+  liberar(lado, altura)
+}
+generadorLanzas ..> Advertencia : usa (crea) >
+Lanza ..> generadorLanzas : usa >
+Lanza ..> personaje : usa >
+
+' no existe en el codigo: representa el polimorfismo entre facil y dificil
+interface EstadoDificultad {
+  penalizar(puntos)
+  tiempoLanza()
+  tiempoEntreLanzas()
+  acelerar()
+}
+object facil
+object dificil
+
+facil ..|> EstadoDificultad
+dificil ..|> EstadoDificultad
+
+object dificultad {
+  elegir(unaDificultad)
+}
+dificultad -> "1" EstadoDificultad : actual >
+Lanza ..> dificultad : usa >
+
+object marcador {
+  puntos
+  ganarPuntos(cantidad)
+}
+object healthBar {
+  actualizar()
+}
+object temporizador {
+  segundos
+  avanzar()
+}
+object gameOver
+
+Comida ..> marcador : usa >
+Bomba ..> marcador : usa >
+dificil ..> marcador : usa >
+personaje ..> healthBar : usa >
+personaje ..> gameOver : usa >
+healthBar ..> personaje : usa >
+
+object configuracion {
+  configurarTablero()
+  configurarVisuales()
+  configurarTeclado()
+  configurarColisiones()
+  configurarTicks()
+  empezar(unaDificultad)
+  spawnear(generador)
+}
+configuracion -> "*" GeneradorObjetos : generadores >
+configuracion ..> personaje : usa >
+configuracion ..> dificultad : usa >
+configuracion ..> generadorLanzas : usa >
+configuracion ..> temporizador : usa >
+
+@enduml
