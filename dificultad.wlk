@@ -27,14 +27,10 @@ object dificil {
 
 object dificultad {
   var actual = facil
-  var empezado = false
 
   method elegir(unaDificultad) {
     actual = unaDificultad
-    empezado = true
   }
-
-  method empezado() = empezado
 
   method penalizar(puntos) { actual.penalizar(puntos) }
   method tiempoLanza() = actual.tiempoLanza()

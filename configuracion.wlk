@@ -8,6 +8,9 @@ import hud.*
 import dificultad.*
 
 object configuracion {
+  // antes de elegir dificultad no cae nada ni corre el cronometro
+  var estado = enMenu
+
   const generadorNormal = new GeneradorObjetos(crear = { new Comida(imagen = ["manzana.png", "banana.png"].anyOne(), puntos = 10) })
   const generadorRara = new GeneradorObjetos(crear = { new Comida(imagen = ["frutilla.png", "naranja.png"].anyOne(), puntos = 25) })
   const generadorEpica = new GeneradorObjetos(crear = { new Comida(imagen = ["sandia.png", "cereza.png"].anyOne(), puntos = 50) })
@@ -18,6 +21,10 @@ object configuracion {
   const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
   const generadorDebuffParasito = new GeneradorObjetos(crear = { new DebuffParasito() })
 
+  method estado(nuevoEstado) {
+    estado = nuevoEstado
+  }
+  
   method generadoresDeObjetos() = [
     generadorNormal, generadorRara, generadorEpica, generadorCorazon,
     generadorBomba, generadorInspiracion, generadorEspejo, generadorDebuffHielo, generadorDebuffParasito
@@ -69,31 +76,20 @@ object configuracion {
   }
 
   method empezar(unaDificultad) {
-    if (not dificultad.empezado()) {
-      dificultad.elegir(unaDificultad)
-      game.removeVisual(selectorDificultad)
-      self.programarLanza()
-      game.onTick(30000, "acelerar lanzas", { dificultad.acelerar() })
-    }
-  }
-
-  method spawnear(generador) {
-    if (dificultad.empezado()) {
-      generador.generar()
-    }
+    estado.empezar(unaDificultad)
   }
 
   method configurarTicks() {
-    game.onTick(1500, "Generar fruta normal", { self.spawnear(generadorNormal) })
-    game.onTick(3000, "Generar fruta rara", { self.spawnear(generadorRara) })
-    game.onTick(6000, "Generar fruta epica", { self.spawnear(generadorEpica) })
-    game.onTick(3000, "Generar bomba", { self.spawnear(generadorBomba) })
-    game.onTick(4000, "Generar inspiracion", { self.spawnear(generadorInspiracion) })
-    game.onTick(4500, "Generar espejo metabolico", { self.spawnear(generadorEspejo) })
-    game.onTick(4000, "Generar debuff hielo", { self.spawnear(generadorDebuffHielo) })
-    game.onTick(7000, "Generar Caja", { self.spawnear(generadorCajas) })
-    game.onTick(20000, "Generar corazon", { self.spawnear(generadorCorazon) })
-    game.onTick(25000, "Generar debuff parasito", { self.spawnear(generadorDebuffParasito) })
+    game.onTick(1500, "Generar fruta normal", { estado.generar(generadorNormal) })
+    game.onTick(3000, "Generar fruta rara", { estado.generar(generadorRara) })
+    game.onTick(6000, "Generar fruta epica", { estado.generar(generadorEpica) })
+    game.onTick(3000, "Generar bomba", { estado.generar(generadorBomba) })
+    game.onTick(4000, "Generar inspiracion", { estado.generar(generadorInspiracion) })
+    game.onTick(4500, "Generar espejo metabolico", { estado.generar(generadorEspejo) })
+    game.onTick(4000, "Generar debuff hielo", { estado.generar(generadorDebuffHielo) })
+    game.onTick(7000, "Generar Caja", { estado.generar(generadorCajas) })
+    game.onTick(20000, "Generar corazon", { estado.generar(generadorCorazon) })
+    game.onTick(25000, "Generar debuff parasito", { estado.generar(generadorDebuffParasito) })
 
     game.onTick(600, "caida", {
       self.generadores().forEach({ generador => generador.actualizar() })
@@ -101,6 +97,32 @@ object configuracion {
       personaje.caer()
     })
 
-    game.onTick(1000, "cronometro", { if (dificultad.empezado()) temporizador.avanzar() })
+    game.onTick(1000, "cronometro", { estado.avanzarCronometro() })
+  }
+}
+
+object enMenu {
+  method empezar(unaDificultad) {
+    dificultad.elegir(unaDificultad)
+    game.removeVisual(selectorDificultad)
+    configuracion.programarLanza()
+    game.onTick(30000, "acelerar lanzas", { dificultad.acelerar() })
+    configuracion.estado(jugando)
+  }
+
+  method generar(generador) { }
+  method avanzarCronometro() { }
+}
+
+object jugando {
+  // ya se eligio dificultad: apretar f o j no hace nada
+  method empezar(unaDificultad) { }
+
+  method generar(generador) {
+    generador.generar()
+  }
+
+  method avanzarCronometro() {
+    temporizador.avanzar()
   }
 }
