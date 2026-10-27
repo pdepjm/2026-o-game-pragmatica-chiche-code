@@ -2,6 +2,30 @@ import wollok.game.*
 import objetos.*
 import hud.*
 import dificultad.*
+
+// el lado sabe hacia donde avanza la lanza que sale de el
+object izquierda {
+  method columna() = 0
+  method adelante(unaPosicion) = unaPosicion.right(1)
+  method atras(unaPosicion) = unaPosicion.left(1)
+  method imagenLanza() = "lanza/lanzaIzq.png"
+}
+
+object derecha {
+  method columna() = game.width() - 1
+  method adelante(unaPosicion) = unaPosicion.left(1)
+  method atras(unaPosicion) = unaPosicion.right(1)
+  method imagenLanza() = "lanza/lanzaDer.png"
+}
+
+object piso {
+  method fila() = 0
+}
+
+object aire {
+  method fila() = 1
+}
+
 class SegmentoLanza {
   var posicion  = game.at(0, 0)
   const lanza
@@ -28,8 +52,8 @@ class SegmentoLanza {
 
 class Lanza {
   var posicion  = game.at(0, 0)
-  var lado = "izquierda"
-  var altura = "piso"
+  var lado = izquierda
+  var altura = piso
   var golpeado = false
   var activa = true
   var avanzando = true
@@ -62,8 +86,8 @@ class Lanza {
   }
 
   // hacia donde apunta la lanza segun el lado del que sale
-  method adelante(unaPosicion) = if (lado == "izquierda") unaPosicion.right(1) else unaPosicion.left(1)
-  method atras(unaPosicion) = if (lado == "izquierda") unaPosicion.left(1) else unaPosicion.right(1)
+  method adelante(unaPosicion) = lado.adelante(unaPosicion)
+  method atras(unaPosicion) = lado.atras(unaPosicion)
 
   // programa los pasos que hacen falta para ir y volver completa. Si una caja la frena se retrae antes y los pasos que sobran no hacen nada
   method moverLanza() {
@@ -118,14 +142,14 @@ class Lanza {
   }
 
   method position() = posicion
-  method image() = if (lado == "izquierda") "lanza/lanzaIzq.png" else "lanza/lanzaDer.png"
+  method image() = lado.imagenLanza()
 
 }
 
 object generadorLanzas {
   const spawns = [
-    ["izquierda", "piso"], ["derecha", "piso"],
-    ["izquierda", "aire"], ["derecha", "aire"]
+    [izquierda, piso], [derecha, piso],
+    [izquierda, aire], [derecha, aire]
   ]
 
   // spawns que tienen una advertencia o una lanza activa
@@ -154,19 +178,14 @@ object generadorLanzas {
   }
 
   // el lado define la columna y la altura define la fila
-  method posicionDeSpawn(lado, altura) {
-    const coordenadaX = if (lado == "izquierda") 0 else game.width() - 1
-    const coordenadaY = if (altura == "piso") 0 else 1
-
-    return game.at(coordenadaX, coordenadaY)
-  }
+  method posicionDeSpawn(lado, altura) = game.at(lado.columna(), altura.fila())
 }
 
 
 class Advertencia {
   var posicion = game.at(0, 0)
-  var lado = "izquierda"
-  var altura = "piso"
+  var lado = izquierda
+  var altura = piso
   var imagen = "advertencia/advertencia1.png"
 
   const tiempoPaso = 400
