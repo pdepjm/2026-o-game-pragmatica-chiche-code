@@ -26,6 +26,9 @@ object personaje {
     if (efectosActivos.isEmpty()) 1
     else efectosActivos.max({ efecto => efecto.multiplicador() }).multiplicador()
 
+  // arranca normal y cada efecto lo puede cambiar (el espejo lo invierte)
+  method metabolismo() = efectosActivos.fold(metabolismoNormal, { metabolismo, efecto => efecto.metabolismo(metabolismo) })
+
   method agregarEfecto(efecto) {
     efectosActivos.add(efecto)
   }
@@ -123,17 +126,19 @@ object personaje {
     healthBar.actualizar()
   }
 
-  method tieneEspejo() = efectosActivos.contains(espejoMetabolico)
-
   method tieneParasito() = efectosActivos.contains(infectado)
-
-  method comioComida() {
-    if (self.tieneParasito()) {
-      infectado.sumarComida(self)
-    }
-  }
 
   method sacarParasito() {
     self.quitarEfecto(infectado)
+  }
+
+  method comer(puntos) {
+    self.metabolismo().comer(self, puntos)
+    // copia porque el parasito se puede sacar de la lista mientras la recorremos
+    efectosActivos.copy().forEach({ efecto => efecto.alComer(self) })
+  }
+
+  method tocarBomba(puntos) {
+    self.metabolismo().tocarBomba(self, puntos)
   }
 }

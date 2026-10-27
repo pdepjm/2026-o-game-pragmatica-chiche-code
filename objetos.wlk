@@ -1,6 +1,5 @@
 import wollok.game.*
 import hud.*
-import dificultad.*
 
 class GeneradorObjetos {
   var listaObjetos = []
@@ -64,11 +63,6 @@ class ObjetoQueCae {
       game.removeVisual(self)
     }
   }
-
-  method lastimar(unPersonaje) {
-    dificultad.penalizar(-50)
-    unPersonaje.recibirDanio(2)
-  }
 }
 
 class Comida inherits ObjetoQueCae {
@@ -78,12 +72,7 @@ class Comida inherits ObjetoQueCae {
   override method image() = imagen
 
   override method efectoAlAgarrar(unPersonaje){
-    if (unPersonaje.tieneEspejo()) {
-      self.lastimar(unPersonaje)
-    } else {
-      marcador.ganarPuntos(puntos * unPersonaje.multiplicador())
-    }
-    unPersonaje.comioComida()
+    unPersonaje.comer(puntos)
   }
 }
 
@@ -101,11 +90,7 @@ class Bomba inherits ObjetoQueCae {
   override method image() = "bomba.png"
 
   override method efectoAlAgarrar(unPersonaje) {
-    if (unPersonaje.tieneEspejo()) {
-      marcador.ganarPuntos( puntos * unPersonaje.multiplicador())
-    } else {
-      self.lastimar(unPersonaje)
-    }
+    unPersonaje.tocarBomba(puntos)
   }
 }
 
