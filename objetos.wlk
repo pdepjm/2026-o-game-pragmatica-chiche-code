@@ -4,6 +4,8 @@ import hud.*
 class GeneradorObjetos {
   var listaObjetos = []
   const crear
+  // cada cuantos milisegundos genera un objeto
+  const property frecuencia
 
   method generar() {
     const libres = self.posicionesLibres()
@@ -94,7 +96,7 @@ class Bomba inherits ObjetoQueCae {
   }
 }
 
-object generadorCajas inherits GeneradorObjetos(crear = { new Caja() }) {
+object generadorCajas inherits GeneradorObjetos(crear = { new Caja() }, frecuencia = 7000) {
   method hayCajaEn(posicion) = listaObjetos.any({ caja => caja.position() == posicion })
 }
 

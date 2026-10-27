@@ -11,26 +11,22 @@ object configuracion {
   // antes de elegir dificultad no cae nada ni corre el cronometro
   var estado = enMenu
 
-  const generadorNormal = new GeneradorObjetos(crear = { new Comida(imagen = ["manzana.png", "banana.png"].anyOne(), puntos = 10) })
-  const generadorRara = new GeneradorObjetos(crear = { new Comida(imagen = ["frutilla.png", "naranja.png"].anyOne(), puntos = 25) })
-  const generadorEpica = new GeneradorObjetos(crear = { new Comida(imagen = ["sandia.png", "cereza.png"].anyOne(), puntos = 50) })
-  const generadorBomba = new GeneradorObjetos(crear = { new Bomba(puntos = 25) })
-  const generadorInspiracion = new GeneradorObjetos(crear = { new Inspiracion() })
-  const generadorEspejo = new GeneradorObjetos(crear = { new EspejoMetabolico() })
-  const generadorDebuffHielo = new GeneradorObjetos(crear = { new DebuffHielo() })
-  const generadorCorazon = new GeneradorObjetos(crear = { new Corazon() })
-  const generadorDebuffParasito = new GeneradorObjetos(crear = { new DebuffParasito() })
+  const generadores = [
+    new GeneradorObjetos(frecuencia = 1500, crear = { new Comida(imagen = ["manzana.png", "banana.png"].anyOne(), puntos = 10) }),
+    new GeneradorObjetos(frecuencia = 3000, crear = { new Comida(imagen = ["frutilla.png", "naranja.png"].anyOne(), puntos = 25) }),
+    new GeneradorObjetos(frecuencia = 6000, crear = { new Comida(imagen = ["sandia.png", "cereza.png"].anyOne(), puntos = 50) }),
+    new GeneradorObjetos(frecuencia = 3000, crear = { new Bomba(puntos = 25) }),
+    new GeneradorObjetos(frecuencia = 4000, crear = { new Inspiracion() }),
+    new GeneradorObjetos(frecuencia = 4500, crear = { new EspejoMetabolico() }),
+    new GeneradorObjetos(frecuencia = 4000, crear = { new DebuffHielo() }),
+    new GeneradorObjetos(frecuencia = 20000, crear = { new Corazon() }),
+    new GeneradorObjetos(frecuencia = 25000, crear = { new DebuffParasito() }),
+    generadorCajas
+  ]
 
   method estado(nuevoEstado) {
     estado = nuevoEstado
   }
-  
-  method generadoresDeObjetos() = [
-    generadorNormal, generadorRara, generadorEpica, generadorCorazon,
-    generadorBomba, generadorInspiracion, generadorEspejo, generadorDebuffHielo, generadorDebuffParasito
-  ]
-
-  method generadores() = self.generadoresDeObjetos() + [generadorCajas]
 
   method configurarTablero() {
     game.title("Lluvia de objetos")
@@ -80,19 +76,12 @@ object configuracion {
   }
 
   method configurarTicks() {
-    game.onTick(1500, "Generar fruta normal", { estado.generar(generadorNormal) })
-    game.onTick(3000, "Generar fruta rara", { estado.generar(generadorRara) })
-    game.onTick(6000, "Generar fruta epica", { estado.generar(generadorEpica) })
-    game.onTick(3000, "Generar bomba", { estado.generar(generadorBomba) })
-    game.onTick(4000, "Generar inspiracion", { estado.generar(generadorInspiracion) })
-    game.onTick(4500, "Generar espejo metabolico", { estado.generar(generadorEspejo) })
-    game.onTick(4000, "Generar debuff hielo", { estado.generar(generadorDebuffHielo) })
-    game.onTick(7000, "Generar Caja", { estado.generar(generadorCajas) })
-    game.onTick(20000, "Generar corazon", { estado.generar(generadorCorazon) })
-    game.onTick(25000, "Generar debuff parasito", { estado.generar(generadorDebuffParasito) })
+    generadores.forEach({ generador =>
+      game.onTick(generador.frecuencia(), "generar objetos", { estado.generar(generador) })
+    })
 
     game.onTick(600, "caida", {
-      self.generadores().forEach({ generador => generador.actualizar() })
+      generadores.forEach({ generador => generador.actualizar() })
       // por si desaparecio la caja en la que estaba parado
       personaje.caer()
     })
