@@ -58,7 +58,7 @@ object configuracion {
   }
 
   method configurarColisiones() {
-    game.onCollideDo(personaje, { objeto => objeto.serAgarrado() })
+    game.onCollideDo(personaje, { objeto => objeto.serAgarrado(personaje) })
   }
 
   method programarLanza() {

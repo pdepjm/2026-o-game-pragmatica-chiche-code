@@ -1,5 +1,4 @@
 import wollok.game.*
-import personaje.*
 import objetos.*
 import hud.*
 import dificultad.*
@@ -7,8 +6,8 @@ class SegmentoLanza {
   var posicion  = game.at(0, 0)
   const lanza
 
-  method serAgarrado() {
-    lanza.serAgarrado()
+  method serAgarrado(unPersonaje) {
+    lanza.serAgarrado(unPersonaje)
   }
 
   method posicion(_posicion) {
@@ -45,11 +44,11 @@ class Lanza {
 
   method tiempoPaso() = dificultad.tiempoLanza()
 
-  method serAgarrado() {
+  method serAgarrado(unPersonaje) {
     if (not golpeado) {
-      personaje.sacarParasito()
+      unPersonaje.sacarParasito()
       dificultad.penalizar(-75)
-      personaje.recibirDanio(3)
+      unPersonaje.recibirDanio(3)
       golpeado = true
     }
   }
@@ -175,7 +174,7 @@ class Advertencia {
   const cuadros = [2, 3, 2, 1, 2, 3, 2, 1]
   const lanza = new Lanza()
 
-  method serAgarrado(){
+  method serAgarrado(unPersonaje){
     // vacio no hace nada
   }
 

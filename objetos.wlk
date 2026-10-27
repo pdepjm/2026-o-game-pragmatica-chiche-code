@@ -1,5 +1,4 @@
 import wollok.game.*
-import personaje.*
 import hud.*
 import dificultad.*
 
@@ -32,7 +31,7 @@ class ObjetoQueCae {
   var activa = true
 
   method image()
-  method efectoAlAgarrar()
+  method efectoAlAgarrar(unPersonaje)
 
   method estaActiva() = activa
 
@@ -52,10 +51,10 @@ class ObjetoQueCae {
     }
   }
 
-  method serAgarrado() {
+  method serAgarrado(unPersonaje) {
     if (activa) {
       self.desaparecer()
-      self.efectoAlAgarrar()
+      self.efectoAlAgarrar(unPersonaje)
     }
   }
 
@@ -66,9 +65,9 @@ class ObjetoQueCae {
     }
   }
 
-  method lastimar() {
+  method lastimar(unPersonaje) {
     dificultad.penalizar(-50)
-    personaje.recibirDanio(2)
+    unPersonaje.recibirDanio(2)
   }
 }
 
@@ -78,21 +77,21 @@ class Comida inherits ObjetoQueCae {
 
   override method image() = imagen
 
-  override method efectoAlAgarrar(){
-    if (personaje.tieneEspejo()) {
-      self.lastimar()
+  override method efectoAlAgarrar(unPersonaje){
+    if (unPersonaje.tieneEspejo()) {
+      self.lastimar(unPersonaje)
     } else {
-      marcador.ganarPuntos(puntos * personaje.multiplicador())
+      marcador.ganarPuntos(puntos * unPersonaje.multiplicador())
     }
-    personaje.comioComida()
+    unPersonaje.comioComida()
   }
 }
 
 class Corazon inherits ObjetoQueCae {
   override method image() = "corazon.png"
 
-  override method efectoAlAgarrar() {
-    personaje.curar(1)
+  override method efectoAlAgarrar(unPersonaje) {
+    unPersonaje.curar(1)
   }
 }
 
@@ -101,11 +100,11 @@ class Bomba inherits ObjetoQueCae {
 
   override method image() = "bomba.png"
 
-  override method efectoAlAgarrar() {
-    if (personaje.tieneEspejo()) {
-      marcador.ganarPuntos( puntos * personaje.multiplicador())
+  override method efectoAlAgarrar(unPersonaje) {
+    if (unPersonaje.tieneEspejo()) {
+      marcador.ganarPuntos( puntos * unPersonaje.multiplicador())
     } else {
-      self.lastimar()
+      self.lastimar(unPersonaje)
     }
   }
 }
@@ -119,8 +118,8 @@ class Caja inherits ObjetoQueCae {
 
   override method image() = "caja.png"
 
-  override method efectoAlAgarrar() {
-    personaje.recibirDanio(2)
+  override method efectoAlAgarrar(unPersonaje) {
+    unPersonaje.recibirDanio(2)
   }
 
   method estaEnElPiso() = posicion.y() == 0
@@ -144,11 +143,11 @@ class Caja inherits ObjetoQueCae {
   }
 
   // le cayo encima al personaje: lo lastima y lo corre a un costado. Si no hay lugar, la caja se rompe
-  override method serAgarrado() {
-    self.efectoAlAgarrar()
+  override method serAgarrado(unPersonaje) {
+    self.efectoAlAgarrar(unPersonaje)
 
-    if (personaje.tieneCostadoLibre()) {
-      personaje.serEmpujado()
+    if (unPersonaje.tieneCostadoLibre()) {
+      unPersonaje.serEmpujado()
     } else {
       self.desaparecer()
     }
