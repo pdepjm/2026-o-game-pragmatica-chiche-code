@@ -1,7 +1,192 @@
+import objetos.*
 import personaje.*
-describe "test del juego"{
+import hud.*
+import dificultad.*
+import efectos.*
 
+/* Test Del Marcador */
+describe "Marcador de puntuación" {
 
+  method initialize() {
+    marcador.reiniciar()
+  }
+
+  test "empieza en 0 puntos" {
+    assert.equals("0", marcador.text())
+  }
+
+  test "al ganar 10 puntos, el marcador muestra 10" {
+    marcador.ganarPuntos(10)
+    assert.equals("10", marcador.text())
+  }
+
+  test "los puntos se acumulan correctamente" {
+    marcador.ganarPuntos(10)
+    marcador.ganarPuntos(25)
+    assert.equals("35", marcador.text())
+  }
+
+  test "la puntuación nunca baja de 0" {
+    marcador.ganarPuntos(-100)
+    assert.equals("0", marcador.text())
+  }
+
+  test "reiniciar pone los puntos en 0" {
+    marcador.ganarPuntos(50)
+    marcador.reiniciar()
+    assert.equals("0", marcador.text())
+  }
+
+  test "ganar puntos después de reiniciar funciona" {
+    marcador.ganarPuntos(100)
+    marcador.reiniciar()
+    marcador.ganarPuntos(30)
+    assert.equals("30", marcador.text())
+  }
+}
+/* Comer Comida y Recibir Bombas*/
+describe "Penalización por bomba según dificultad" {
+
+  method initialize() {
+    marcador.reiniciar()
+    marcador.ganarPuntos(200)
+  }
+
+  test "en fácil la penalización por bomba NO quita puntos" {
+    dificultad.elegir(facil)
+    dificultad.penalizar(-50)
+    assert.equals("200", marcador.text())
+  }
+
+  test "en difícil la penalización por bomba SÍ quita puntos" {
+    dificultad.elegir(dificil)
+    dificultad.penalizar(-50)
+    assert.equals("150", marcador.text())
+  }
+
+  test "en difícil la penalización no baja los puntos de 0" {
+    marcador.reiniciar()
+    marcador.ganarPuntos(20)
+    dificultad.elegir(dificil)
+    dificultad.penalizar(-50)
+    assert.equals("0", marcador.text())
+  }
+
+  test "en difícil múltiples penalizaciones descuentan correctamente" {
+    dificultad.elegir(dificil)
+    dificultad.penalizar(-50)
+    dificultad.penalizar(-50)
+    assert.equals("100", marcador.text())
+  }
+}
+describe "Personaje come comida (No buffs)" {
+
+  method initialize() {
+    marcador.reiniciar()
+  }
+
+  test "comer comida de 10 puntos sube el marcador a 10" {
+    personaje.comer(10)
+    assert.equals("10", marcador.text())
+  }
+
+  test "comer comida de 25 puntos sube el marcador a 25" {
+    personaje.comer(25)
+    assert.equals("25", marcador.text())
+  }
+
+  test "comer comida de 50 puntos sube el marcador a 50" {
+    personaje.comer(50)
+    assert.equals("50", marcador.text())
+  }
+
+  test "comer varias comidas acumula los puntos" {
+    personaje.comer(10)
+    personaje.comer(25)
+    personaje.comer(50)
+    assert.equals("85", marcador.text())
+  }
 }
 
-  
+/* vida del personaje */
+describe "Comportamiento vida del personaje" {
+
+  test "el personaje empieza con 8 de vida" {
+    assert.equals(8, personaje.vida())
+  }
+
+  test "curar cuando la vida está al máximo no la excede" {
+    personaje.curar(5)
+    assert.equals(8, personaje.vida())
+  }
+
+  test "curar con 1 cuando está al máximo no cambia la vida" {
+    personaje.curar(1)
+    assert.equals(8, personaje.vida())
+  }
+}
+
+/* efectos sobre el personaje */
+
+describe "Efectos sobre el personaje" {
+  test "sin efectos el personaje puede moverse" {
+    assert.that(personaje.puedeMoverse())
+  }
+
+  test "sin efectos el multiplicador es 1" {
+    assert.equals(1, personaje.multiplicador())
+  }
+
+  test "congelado impide moverse" {
+    personaje.agregarEfecto(congelado)
+    assert.notThat(personaje.puedeMoverse())
+  }
+
+  test "dorado tiene multiplicador 2" {
+    personaje.agregarEfecto(dorado)
+    assert.equals(2, personaje.multiplicador())
+  }
+
+  test "el personaje no tiene parásito inicialmente" {
+    assert.notThat(personaje.tieneParasito())
+    
+  }
+}
+
+/* Temporizador del juego */
+describe "Temporizador" {
+
+  method initialize() {
+    temporizador.reiniciar()
+  }
+
+  test "empieza en 0:00" {
+    assert.equals("0:00", temporizador.text())
+  }
+
+  test "avanzar 1 segundo, muestra 0:01" {
+    temporizador.avanzar()
+    assert.equals("0:01", temporizador.text())
+  }
+
+  test "avanzar 10 segundos, muestra 0:10" {
+    10.times({ temporizador.avanzar() })
+    assert.equals("0:10", temporizador.text())
+  }
+
+  test "avanzar 60 segundos, muestra 1:00" {
+    60.times({ temporizador.avanzar() })
+    assert.equals("1:00", temporizador.text())
+  }
+
+  test "avanzar 90 segundos muestra 1:30" {
+    90.times({ temporizador.avanzar() })
+    assert.equals("1:30", temporizador.text())
+  }
+
+  test "reiniciar vuelve a 0:00" {
+    5.times({ temporizador.avanzar() })
+    temporizador.reiniciar()
+    assert.equals("0:00", temporizador.text())
+  }
+}
