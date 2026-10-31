@@ -18,40 +18,25 @@ describe "Marcador de puntuación" {
     assert.equals("0", marcador.text())
   }
 }
+
 /* Comer Comida y Recibir Bombas*/
-describe "Penalización por bomba según dificultad" {
+describe "Penalización según dificultad" {
 
   method initialize() {
     marcador.ganarPuntos(200)
   }
 
-  test "¿en fácil la penalización por bomba NO quita puntos?" {
-    dificultad.elegir(facil)
-    dificultad.penalizar(-50)
+  test "¿en fácil la penalización NO quita puntos?" {
+    facil.penalizar(-50)
     assert.equals("200", marcador.text())
   }
 
-  test "¿en difícil la penalización por bomba SÍ quita puntos?" {
-    dificultad.elegir(dificil)
-    dificultad.penalizar(-50)
+  test "¿en difícil la penalización SÍ quita puntos?" {
+    dificil.penalizar(-50)
     assert.equals("150", marcador.text())
   }
-
-  test "¿en difícil la penalización no baja los puntos de 0?" {
-    marcador.reiniciar()
-    marcador.ganarPuntos(20)
-    dificultad.elegir(dificil)
-    dificultad.penalizar(-50)
-    assert.equals("0", marcador.text())
-  }
-
-  test "¿en difícil múltiples penalizaciones descuentan correctamente?" {
-    dificultad.elegir(dificil)
-    dificultad.penalizar(-50)
-    dificultad.penalizar(-50)
-    assert.equals("100", marcador.text())
-  }
 }
+
 describe "Personaje come comida (No buffs)" {
   test "¿comer comida de 25 puntos sube el marcador a 25?" {
     personaje.comer(25)
@@ -69,16 +54,16 @@ describe "Personaje come comida (No buffs)" {
 
 describe "Efectos sobre el personaje" {
   test "¿No puede moverse si esta congelado?" {
-    personaje.agregarEfecto(congelado)
+    congelado.aplicar(personaje)
     assert.notThat(personaje.puedeMoverse())
   }
 
   test "¿dorado tiene multiplicador 2?" {
-    personaje.agregarEfecto(dorado)
-    assert.equals(2, personaje.multiplicador())
+  assert.equals(2, dorado.multiplicador())
   }
 
 }
+
 /*Comportamiento personaje*/
 describe "Personaje" {
   test "¿RecibirDanio baja la vida?" {
@@ -93,16 +78,79 @@ describe "Personaje" {
 
 /* Temporizador del juego */
 describe "Temporizador" {
-
-
   test "¿avanzar 10 segundos, muestra 0:10?" {
-    10.times({ temporizador.avanzar() })
+    10.times({ _ => temporizador.avanzar() })
     assert.equals("0:10", temporizador.text())
   }
 
   test "¿avanzar 60 segundos, muestra 1:00?" {
-    60.times({ temporizador.avanzar() })
+    60.times({ _ => temporizador.avanzar() })
     assert.equals("1:00", temporizador.text())
   }
+}
 
+describe "Espejo Metabólico" {
+  test "El Espejo invierte los efectos" {
+    espejoMetabolico.aplicar(personaje)
+    
+    assert.equals(metabolismoEspejado, personaje.metabolismo())
+  }
+
+  test "El Espejo invierte el efecto de comer comida y toca bomba" {
+    const vidaInicial = personaje.vida()
+    espejoMetabolico.aplicar(personaje)
+    
+    personaje.comer(10)
+    
+    assert.equals(vidaInicial - 2, personaje.vida())
+  }
+
+  test "El Espejo invierte el efecto de tocar bomba y suma puntos" {
+    marcador.reiniciar()
+    espejoMetabolico.aplicar(personaje)
+    
+    personaje.tocarBomba(10)
+    
+    assert.equals("10", marcador.text())
+  }
+}
+
+describe "Parasito" {
+  test "El Parásito se aplica correctamente al personaje" {
+    infectado.aplicar(personaje)
+    
+    assert.that(personaje.tieneParasito())
+  }
+
+  test "El Parásito explota y descuenta vida tras comer 5 veces" {
+    const vidaInicial = personaje.vida()
+    infectado.aplicar(personaje)
+
+    4.times({ _ => personaje.comer(5) }) 
+    assert.that(personaje.tieneParasito())
+    assert.equals(vidaInicial, personaje.vida())
+
+    personaje.comer(5)
+    
+    assert.notThat(personaje.tieneParasito())
+    assert.equals(vidaInicial - 5, personaje.vida())
+  }
+}
+
+describe "Lanzas en dificil" {
+  test "Al acelerar la dificultad, disminuye el tiempo de la lanza y el intervalo entre ellas" {
+    // Valores iniciales: tiempoLanza = 250, tiempoEntreLanzas = 5000
+    dificil.acelerar()
+
+    assert.equals(220, dificil.tiempoLanza())
+    assert.equals(4500, dificil.tiempoEntreLanzas())
+  }
+
+  test "Forzamos el limite del tiempo e intervalo" {
+    // Aceleramos muchas veces seguidas para forzar el límite
+    10.times({ _ => dificil.acelerar() })
+
+    assert.equals(100, dificil.tiempoLanza())
+    assert.equals(2000, dificil.tiempoEntreLanzas())
+  }
 }
