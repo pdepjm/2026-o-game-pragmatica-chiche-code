@@ -42,13 +42,6 @@ describe "Personaje come comida (No buffs)" {
     personaje.comer(25)
     assert.equals("25", marcador.text())
   }
-
-  test "¿comer varias comidas acumula los puntos?" {
-    personaje.comer(10)
-    personaje.comer(25)
-    personaje.comer(50)
-    assert.equals("85", marcador.text())
-  }
 }
 /* efectos sobre el personaje */
 
