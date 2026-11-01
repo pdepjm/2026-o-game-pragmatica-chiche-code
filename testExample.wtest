@@ -19,7 +19,6 @@ describe "Marcador de puntuación" {
   }
 }
 
-/* Comer Comida y Recibir Bombas*/
 describe "Penalización según dificultad" {
 
   method initialize() {
@@ -132,7 +131,7 @@ describe "Parasito" {
   }
 }
 
-describe "Lanzas en dificil" {
+describe "Dificultad dificil" {
   test "Al acelerar la dificultad, disminuye el tiempo de la lanza y el intervalo entre ellas" {
     // Valores iniciales: tiempoLanza = 250, tiempoEntreLanzas = 5000
     dificil.acelerar()
@@ -141,7 +140,7 @@ describe "Lanzas en dificil" {
     assert.equals(4500, dificil.tiempoEntreLanzas())
   }
 
-  test "Forzamos el limite del tiempo e intervalo" {
+  test "Acelerar no baja de los tiempos mínimos" {
     // Aceleramos muchas veces seguidas para forzar el límite
     10.times({ _ => dificil.acelerar() })
 
