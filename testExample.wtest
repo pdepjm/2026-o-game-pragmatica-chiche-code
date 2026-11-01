@@ -115,16 +115,22 @@ describe "Parasito" {
     assert.that(personaje.tieneParasito())
   }
 
-  test "El Parásito explota y descuenta vida tras comer 5 veces" {
+  test "El Parásito sigue activo con 4 comidas" {
     const vidaInicial = personaje.vida()
     infectado.aplicar(personaje)
 
-    4.times({ _ => personaje.comer(5) }) 
+    4.times({ _ => infectado.alComer(personaje) })
+
     assert.that(personaje.tieneParasito())
     assert.equals(vidaInicial, personaje.vida())
+  }
 
-    personaje.comer(5)
-    
+  test "El Parásito explota a las 5 comidas y descuenta vida" {
+    const vidaInicial = personaje.vida()
+    infectado.aplicar(personaje)
+
+    5.times({ _ => infectado.alComer(personaje) })
+
     assert.notThat(personaje.tieneParasito())
     assert.equals(vidaInicial - 5, personaje.vida())
   }
