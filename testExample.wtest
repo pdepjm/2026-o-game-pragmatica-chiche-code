@@ -83,27 +83,23 @@ describe "Temporizador" {
 }
 
 describe "Espejo Metabólico" {
-  test "El Espejo invierte los efectos" {
+  test "El Espejo cambia el metabolismo del personaje por el espejado" {
     espejoMetabolico.aplicar(personaje)
-    
+
     assert.equals(metabolismoEspejado, personaje.metabolismo())
   }
 
-  test "El Espejo invierte el efecto de comer comida y toca bomba" {
+  test "Con el metabolismo espejado, la comida lastima" {
     const vidaInicial = personaje.vida()
-    espejoMetabolico.aplicar(personaje)
-    
-    personaje.comer(10)
-    
+
+    metabolismoEspejado.comer(personaje, 10)
+
     assert.equals(vidaInicial - 2, personaje.vida())
   }
 
-  test "El Espejo invierte el efecto de tocar bomba y suma puntos" {
-    marcador.reiniciar()
-    espejoMetabolico.aplicar(personaje)
-    
-    personaje.tocarBomba(10)
-    
+  test "Con el metabolismo espejado, la bomba suma puntos" {
+    metabolismoEspejado.tocarBomba(personaje, 10)
+
     assert.equals("10", marcador.text())
   }
 }
