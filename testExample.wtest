@@ -1,7 +1,150 @@
+import objetos.*
 import personaje.*
-describe "test del juego"{
+import hud.*
+import dificultad.*
+import efectos.*
 
+/* Test Del Marcador */
+describe "Marcador de puntuación" {
+
+  test "¿los puntos se acumulan correctamente?" {
+    marcador.ganarPuntos(10)
+    marcador.ganarPuntos(25)
+    assert.equals("35", marcador.text())
+  }
+
+  test "¿la puntuación nunca baja de 0?" {
+    marcador.ganarPuntos(-100)
+    assert.equals("0", marcador.text())
+  }
+}
+
+describe "Penalización según dificultad" {
+
+  method initialize() {
+    marcador.ganarPuntos(200)
+  }
+
+  test "¿en fácil la penalización NO quita puntos?" {
+    facil.penalizar(-50)
+    assert.equals("200", marcador.text())
+  }
+
+  test "¿en difícil la penalización SÍ quita puntos?" {
+    dificil.penalizar(-50)
+    assert.equals("150", marcador.text())
+  }
+}
+
+describe "Personaje come comida (No buffs)" {
+  test "¿comer comida de 25 puntos sube el marcador a 25?" {
+    personaje.comer(25)
+    assert.equals("25", marcador.text())
+  }
+}
+/* efectos sobre el personaje */
+
+describe "Efectos sobre el personaje" {
+  test "¿No puede moverse si esta congelado?" {
+    congelado.aplicar(personaje)
+    assert.notThat(personaje.puedeMoverse())
+  }
+
+  test "¿dorado tiene multiplicador 2?" {
+  assert.equals(2, dorado.multiplicador())
+  }
 
 }
 
-  
+/*Comportamiento personaje*/
+describe "Personaje" {
+  test "¿RecibirDanio baja la vida?" {
+    personaje.recibirDanio(1)
+    assert.equals(7, personaje.vida())
+  }
+  test "¿Curar no pasa el maximo?" {
+    personaje.curar(1)
+    assert.equals(8, personaje.vida())
+  }
+}
+
+/* Temporizador del juego */
+describe "Temporizador" {
+  test "¿avanzar 10 segundos, muestra 0:10?" {
+    10.times({ _ => temporizador.avanzar() })
+    assert.equals("0:10", temporizador.text())
+  }
+
+  test "¿avanzar 60 segundos, muestra 1:00?" {
+    60.times({ _ => temporizador.avanzar() })
+    assert.equals("1:00", temporizador.text())
+  }
+}
+
+describe "Espejo Metabólico" {
+  test "El Espejo cambia el metabolismo del personaje por el espejado" {
+    espejoMetabolico.aplicar(personaje)
+
+    assert.equals(metabolismoEspejado, personaje.metabolismo())
+  }
+
+  test "Con el metabolismo espejado, la comida lastima" {
+    const vidaInicial = personaje.vida()
+
+    metabolismoEspejado.comer(personaje, 10)
+
+    assert.equals(vidaInicial - 2, personaje.vida())
+  }
+
+  test "Con el metabolismo espejado, la bomba suma puntos" {
+    metabolismoEspejado.tocarBomba(personaje, 10)
+
+    assert.equals("10", marcador.text())
+  }
+}
+
+describe "Parasito" {
+  test "El Parásito se aplica correctamente al personaje" {
+    infectado.aplicar(personaje)
+    
+    assert.that(personaje.tieneParasito())
+  }
+
+  test "El Parásito sigue activo con 4 comidas" {
+    const vidaInicial = personaje.vida()
+    infectado.aplicar(personaje)
+
+    4.times({ _ => infectado.alComer(personaje) })
+
+    assert.that(personaje.tieneParasito())
+    assert.equals(vidaInicial, personaje.vida())
+  }
+
+  test "El Parásito explota a las 5 comidas y descuenta vida" {
+    const vidaInicial = personaje.vida()
+    infectado.aplicar(personaje)
+
+    5.times({ _ => infectado.alComer(personaje) })
+
+    assert.notThat(personaje.tieneParasito())
+    assert.equals(vidaInicial - 5, personaje.vida())
+  }
+}
+
+describe "Dificultad dificil" {
+  test "Al acelerar la dificultad, disminuye el tiempo de la lanza y el intervalo entre ellas" {
+    // Valores iniciales: tiempoLanza = 250, tiempoEntreLanzas = 5000
+    dificil.acelerar()
+
+    assert.equals(220, dificil.tiempoLanza())
+    assert.equals(4500, dificil.tiempoEntreLanzas())
+  }
+
+  test "Acelerar no baja de los tiempos mínimos" {
+    // Aceleramos muchas veces seguidas para forzar el límite
+    10.times({ _ => dificil.acelerar() })
+
+    assert.equals(100, dificil.tiempoLanza())
+    assert.equals(2000, dificil.tiempoEntreLanzas())
+  }
+}
