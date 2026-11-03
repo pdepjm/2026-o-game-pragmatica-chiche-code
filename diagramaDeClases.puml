@@ -1,0 +1,246 @@
+@startuml diagrama_completo_tp
+skinparam classAttributeIconSize 0
+skinparam backgroundColor white
+skinparam shadowing false
+
+' ==========================================
+' ESTADOS DEL JUEGO (State Pattern)
+' ==========================================
+object configuracion {
+  estado
+  generadores
+  empezar(unaDificultad)
+}
+interface EstadoJuego {
+  empezar(unaDificultad)
+  generar(generador)
+  avanzarCronometro()
+}
+object enMenu
+object jugando
+
+enMenu ..|> EstadoJuego
+jugando ..|> EstadoJuego
+configuracion -> "1" EstadoJuego : actual >
+
+' ==========================================
+' PERSONAJE Y METABOLISMO (Strategy Pattern)
+' ==========================================
+object personaje {
+  vidaActual
+  saltando
+  cayendo
+  moverIzquierda()
+  moverDerecha()
+  saltar()
+  caer()
+  recibirDanio(danio)
+  curar(cantidad)
+  comer(puntos)
+  tocarBomba(puntos)
+  agregarEfecto(efecto)
+  metabolismo()
+}
+
+interface Metabolismo {
+  comer(unPersonaje, puntos)
+  tocarBomba(unPersonaje, puntos)
+}
+object metabolismoNormal
+object metabolismoEspejado
+
+metabolismoNormal ..|> Metabolismo
+metabolismoEspejado ..|> Metabolismo
+personaje ..> Metabolismo : calcula dinámicamente >
+
+' ==========================================
+' EFECTOS SOBRE EL PERSONAJE
+' ==========================================
+abstract class Efecto {
+  prioridad()
+  image()
+  permiteMoverse()
+  multiplicador()
+  metabolismo(actual)
+  alComer(unPersonaje)
+  aplicar(unPersonaje)
+}
+abstract class EfectoTemporal {
+  duracion()
+  aplicar(unPersonaje)
+}
+EfectoTemporal -up-|> Efecto
+
+object lastimado
+object congelado
+object dorado
+object espejoMetabolico
+object infectado {
+  comidas
+}
+
+lastimado -up-|> EfectoTemporal
+congelado -up-|> EfectoTemporal
+dorado -up-|> EfectoTemporal
+espejoMetabolico -up-|> EfectoTemporal
+infectado -up-|> Efecto
+
+personaje -> "*" Efecto : efectosActivos >
+
+' ==========================================
+' GENERADORES Y OBJETOS QUE CAEN
+' ==========================================
+class GeneradorObjetos {
+  frecuencia
+  generar()
+  actualizar()
+}
+object generadorCajas {
+  hayCajaEn(posicion)
+}
+generadorCajas -up-|> GeneradorObjetos
+
+abstract class ObjetoQueCae {
+  activa
+  posicion
+  caer()
+  serAgarrado(unPersonaje)
+  {abstract} efectoAlAgarrar(unPersonaje)
+  desaparecer()
+}
+
+class Comida {
+  puntos
+}
+class Corazon
+class Bomba {
+  puntos
+}
+class Caja {
+  ticksRestantes
+  descontarTick()
+}
+class Inspiracion_Obj as "Inspiracion"
+class EspejoMetabolico_Obj as "EspejoMetabolico"
+class DebuffHielo_Obj as "DebuffHielo"
+class DebuffParasito_Obj as "DebuffParasito"
+
+Comida -up-|> ObjetoQueCae
+Corazon -up-|> ObjetoQueCae
+Bomba -up-|> ObjetoQueCae
+Caja -up-|> ObjetoQueCae
+Inspiracion_Obj -up-|> ObjetoQueCae
+EspejoMetabolico_Obj -up-|> ObjetoQueCae
+DebuffHielo_Obj -up-|> ObjetoQueCae
+DebuffParasito_Obj -up-|> ObjetoQueCae
+
+GeneradorObjetos -> "*" ObjetoQueCae : crea/gestiona >
+ObjetoQueCae ..> personaje : interactúa >
+
+' ==========================================
+' DIFICULTAD (State Pattern)
+' ==========================================
+interface EstadoDificultad {
+  penalizar(puntos)
+  tiempoLanza()
+  tiempoEntreLanzas()
+  acelerar()
+}
+object facil
+object dificil
+object dificultad {
+  elegir(unaDificultad)
+}
+
+facil ..|> EstadoDificultad
+dificil ..|> EstadoDificultad
+dificultad -> "1" EstadoDificultad : actual >
+metabolismoNormal ..> dificultad : penaliza >
+
+' ==========================================
+' MECÁNICA DE LANZAS 
+' ==========================================
+interface LadoLanza {
+  columna()
+  adelante(unaPosicion)
+  atras(unaPosicion)
+  imagenLanza()
+}
+interface AlturaLanza {
+  fila()
+}
+object izquierda
+object derecha
+object piso
+object aire
+
+izquierda ..|> LadoLanza
+derecha ..|> LadoLanza
+piso ..|> AlturaLanza
+aire ..|> AlturaLanza
+
+object generadorLanzas {
+  ocupados
+  spawns
+  lanzarRandom()
+  estaLibre(spawn)
+  liberar(lado, altura)
+  posicionDeSpawn(lado, altura)
+}
+
+class Lanza {
+  extension
+  activa
+  avanzando
+  moverLanza()
+  extender()
+  retraer()
+  serAgarrado(unPersonaje)
+}
+class SegmentoLanza {
+  avanzar()
+  retroceder()
+}
+class Advertencia {
+  animacion()
+}
+
+' Relaciones del módulo Lanzas
+generadorLanzas --> "*" LadoLanza : conoce >
+generadorLanzas --> "*" AlturaLanza : conoce >
+Advertencia -> "1" LadoLanza : lado >
+Advertencia -> "1" AlturaLanza : altura >
+Advertencia -> "1" Lanza : lanza >
+Lanza -> "1" LadoLanza : lado >
+Lanza -> "1" AlturaLanza : altura >
+Lanza "1" *-- "*" SegmentoLanza : segmentos >
+
+generadorLanzas ..> Advertencia : crea >
+Lanza ..> generadorLanzas : libera >
+Lanza ..> personaje : daña >
+Lanza ..> dificultad : consulta tiempos >
+
+' ==========================================
+' HUD Y UI
+' ==========================================
+package "HUD y UI" {
+  object marcador {
+    puntos
+    ganarPuntos(cantidad)
+  }
+  object healthBar {
+    actualizar()
+  }
+  object temporizador {
+    segundos
+    avanzar()
+  }
+  object gameOver
+  object marco
+  class CeldaMarco
+  object selectorDificultad
+}
+
+marco -> "*" CeldaMarco : dibuja >
+
+@enduml

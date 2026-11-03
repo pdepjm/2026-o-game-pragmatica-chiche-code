@@ -1,11 +1,13 @@
 import wollok.game.*
 
-import example.pepita
+import configuracion.*
 
-program PepitaGame {
-	game.title("Pepita")
-	game.height(10)
-	game.width(10)
+program LluviaDeObjetos {
+	configuracion.configurarTablero()
+	configuracion.configurarVisuales()
+	configuracion.configurarTeclado()
+	configuracion.configurarColisiones()
+	configuracion.configurarTicks()
 
 	game.start()
 }

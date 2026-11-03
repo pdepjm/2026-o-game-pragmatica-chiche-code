@@ -1,5 +1,7 @@
-### [Nombre del juego]
+### [Lluvia de objetos]
 
-* Integrante 1
-* Integrante 2
-* Etc...
+* Guichet Joaquin
+* Abraham Thiago
+* Jorge José Manuel
+* Rolon Lautaro
+* Panzera Lucas
